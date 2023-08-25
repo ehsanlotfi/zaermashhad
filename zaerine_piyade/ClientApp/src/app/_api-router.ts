@@ -1,15 +1,15 @@
-const host = "https://localhost:7082/";
-//const host = "https://zaerpiyade.ir/";
+import { environment } from 'src/environments/environment';
+
 export const ROUTERAPI = {
-    auth: `${host}api/auth`,
-    logout: `${host}api/auth/logout`,
-    getHash: `${host}api/auth/gethash/`,
-    registr: `${host}api/zaer/registr/`,
-    delete: `${host}api/zaer/delete/`,
-    saveZaer: `${host}api/zaer/save-zaer`,
-    zaer: `${host}api/zaer`,
-    getAllZaer: `${host}api/zaer/get-all-zaer`,
-    zaerList: `${host}api/zaer/zaer-list/`,
-    trafficReport: `${host}api/zaer/traffic-report`,
-    teamReport: `${host}api/zaer/team-report`,
+    auth: `${environment.origin}api/auth`,
+    logout: `${environment.origin}api/auth/logout`,
+    getHash: `${environment.origin}api/auth/gethash/`,
+    registr: `${environment.origin}api/zaer/registr/`,
+    delete: `${environment.origin}api/zaer/delete/`,
+    saveZaer: `${environment.origin}api/zaer/save-zaer`,
+    zaer: `${environment.origin}api/zaer`,
+    getAllZaer: `${environment.origin}api/zaer/get-all-zaer`,
+    zaerList: `${environment.origin}api/zaer/zaer-list/`,
+    trafficReport: `${environment.origin}api/zaer/traffic-report`,
+    teamReport: `${environment.origin}api/zaer/team-report`,
 }
