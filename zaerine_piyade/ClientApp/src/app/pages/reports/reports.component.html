@@ -1,0 +1,82 @@
+<div class="row">
+  <div class="col-12 bg-white py-2">
+    <button class="btn text-info-custom d-flex" [routerLink]="['/trafic']">
+      <i class="icon-fo-arrow-right-curved2 f-20 fw-bold ms-1"></i>
+      بازگشت
+    </button>
+  </div>
+</div>
+
+<div class="row mt-4 mx-4" id="main-status">
+
+  <div class="col-lg-3 mb-2">
+    <div class="w-100 float-end text-center bg-white p-4 radius-20 h-100">
+      <h3>تعداد کل زائرین</h3>
+      <div class="w-100 float-end alert py-4 mt-4 border-0 f-20">{{countAllZaer}}</div>
+    </div>
+  </div>
+  <div class="col-lg-9">
+    <div class="row">
+      <div class="col-lg-4 mb-2" *ngFor="let item of countAll">
+        <div class="w-100 float-end text-center bg-white p-4 radius-20 box-report d-flex justify-content-center">
+          <h3 class="w-50">{{item.name}}</h3>
+          <h3 class="w-50" [ngClass]="item.class">{{ item.value }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="row mx-4 mt-4">
+  <div class="col-12  bg-white p-4 radius-20 scroll-table table-responsive">
+    <table class="table table-width table-bordered">
+      <thead>
+        <tr>
+          <th class="text-muted text-center" rowspan="2">نام کاروان</th>
+          <th class="text-muted text-center" colspan="4">کل</th>
+          <th class="text-muted text-center" colspan="4">آقا</th>
+          <th class="text-muted text-center" colspan="4">خانم</th>
+        </tr>
+        <tr>
+          <th class="text-muted text-center">تعداد</th>
+          <th class="text-muted text-center">پذیرش</th>
+          <th class="text-muted text-center">مقیم</th>
+          <th class="text-muted text-center">تردد</th>
+
+          <th class="text-muted text-center">تعداد</th>
+          <th class="text-muted text-center">پذیرش</th>
+          <th class="text-muted text-center">مقیم</th>
+          <th class="text-muted text-center">تردد</th>
+
+          <th class="text-muted text-center">تعداد</th>
+          <th class="text-muted text-center">پذیرش</th>
+          <th class="text-muted text-center">مقیم</th>
+          <th class="text-muted text-center">تردد</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of teamData">
+          <th>{{ item.name }}</th>
+
+          <td>{{ item.totalZaer }}</td>
+          <td>{{ item.totalRegister }}</td>
+          <td>{{ item.totalInside }}</td>
+          <td>{{ item.totalTraffic }}</td>
+
+          <td>{{ item.totalZaerMan }}</td>
+          <td>{{ item.totalRegisterMan }}</td>
+          <td>{{ item.totalInsideMan }}</td>
+          <td>{{ item.totalTrafficMan }}</td>
+
+          <td>{{ item.totalZaerWoman }}</td>
+          <td>{{ item.totalRegisterWoman }}</td>
+          <td>{{ item.totalInsideWoman }}</td>
+          <td>{{ item.totalTrafficWoman }}</td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

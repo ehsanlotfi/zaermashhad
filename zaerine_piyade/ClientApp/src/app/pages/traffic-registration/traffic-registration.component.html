@@ -1,0 +1,169 @@
+<div class="row bg-white mx-4 mt-4 p-3 rounded-4">
+    <div class="col-lg-6 position-relative">
+        <form (keypress.enter)="registrZaer()" (ngSubmit)="registrZaer()">
+            <input autocomplete="none" [disabled]="loading" autofocus #inputZaer onlyNumber type="text"
+                class="form-control py-2" (input)="registrZaer()" placeholder="جستجو" [(ngModel)]="zaerId"
+                name="zaerId">
+            <button class="btn btn-info f-14 px-4 text-white btn-search"
+                [disabled]="(zaerId && zaerId.length != 4) || loading">ثبت
+                تردد</button>
+        </form>
+    </div>
+    <div class="col-lg-6 text-start mt-3 mt-lg-1 d-flex justify-content-end gap-1">
+        <button class="btn btn-outline-info f-14" [routerLink]="['/reports']">
+            <i class="icon-fo-slide-page f-14 ms-2"></i>
+            گزارشات
+        </button>
+        <button (click)="logout()"
+            class="btn btn-outline-info d-flex f-14 float-start justify-content-center align-items-center mx-2 px-4">
+            <div class="rotate ms-2">
+                <i class="icon-fo-signout f-14 "></i>
+            </div>
+            خروج
+
+        </button>
+    </div>
+</div>
+<div class="row mx-4">
+    <div class="col-lg-6 bg-white mb-5 mt-4 p-3 rounded-4">
+        <div class="w-100 float-end">
+            <h4 class="text-info-custom float-end">
+                <span *ngIf="model.id"
+                    class="alert alert-info float-start py-2 f-14 d-flex align-items-center me-2">شناسه <b
+                        class="me-2">{{model.id}}</b> </span>
+                مشخصات
+            </h4>
+            <ng-container *ngIf="model.total != null">
+                <span *ngIf="(model.total % 2) == 1"
+                    class="alert alert-info float-start py-2 f-14 d-flex align-items-center">
+                    ورود
+                    <i class="icon-fo-checked-filled text-info-custom me-2"></i>
+                </span>
+                <span *ngIf="(model.total % 2) == 0"
+                    class="alert alert-danger float-start py-2 f-14 d-flex align-items-center">
+                    خروج
+                    <i class="icon-fo-circle-close-filled text-danger-custom me-2"></i>
+                </span>
+                <span class="float-start f-14 mt-2 ms-2">وضعیت: </span>
+            </ng-container>
+
+        </div>
+        <div class="w-100 float-end">
+
+            <ul class="list-group list-group-flush px-0" *ngIf="!editMode">
+                <li class="list-group-item py-3">
+                    <span>نام:</span>
+                    <span class="float-start">{{ model.fullname }}</span>
+                </li>
+                <li class="list-group-item py-3">
+                    <span>جنسیت:</span>
+                    <span class="float-start" *ngIf="model.sex == 0">خانم</span>
+                    <span class="float-start" *ngIf="model.sex == 1">آقا</span>
+                </li>
+                <li class="list-group-item py-3">
+                    <span>کدملی:</span>
+                    <span class="float-start">{{ model.nationalCode }}</span>
+                </li>
+                <li class="list-group-item py-3">
+                    <span>نام کاروان:</span>
+                    <span class="float-start">{{ model.team }}</span>
+                </li>
+                <li class="list-group-item py-3">
+                    <span>مسئول کاروان:</span>
+                    <span class="float-start">{{ model.teamAdmin }}</span>
+                </li>
+                <li class="list-group-item ">
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-outline-info f-14 ms-2" (click)="editZaer()" *ngIf="model.id"
+                            (click)="editMode = true">ویرایش</button>
+                        <button class="btn btn-outline-info f-14 ms-2" (click)="newZaer()">جدید</button>
+                    </div>
+                </li>
+            </ul>
+
+            <ul class="list-group list-group-flush px-0" *ngIf="editMode">
+                <li class="list-group-item py-3 d-flex">
+                    <span>نام:</span>
+                    <input type="text" class="form-control-plaintext p-0 me-2 w-50" [(ngModel)]="modelForm.fullname">
+                </li>
+                <li class="list-group-item py-3 d-flex">
+                    <span>جنسیت:</span>
+                    <div class="w-50 d-flex">
+                        <div class="ms-2 me-2"><input class="ms-1" name="sex" type="radio" [value]="1"
+                                [(ngModel)]="modelForm.sex"><span>آقا</span></div>
+                        <div><input class="ms-1" name="sex" type="radio" [value]="0"
+                                [(ngModel)]="modelForm.sex"><span>خانم</span></div>
+                    </div>
+                </li>
+                <li class="list-group-item py-3 d-flex">
+                    <span>کدملی:</span>
+                    <input type="text" class="form-control-plaintext p-0 me-2 w-50"
+                        [(ngModel)]="modelForm.nationalCode">
+                </li>
+                <li class="list-group-item py-3 d-flex">
+                    <span>نام کاروان:</span>
+                    <input type="text" class="form-control-plaintext p-0 me-2 w-50" [(ngModel)]="modelForm.team">
+                </li>
+                <li class="list-group-item py-3 d-flex">
+                    <span>مسئول کاروان:</span>
+                    <input type="text" class="form-control-plaintext p-0 me-2 w-50" [(ngModel)]="modelForm.teamAdmin">
+                </li>
+                <li class="list-group-item ">
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-outline-info f-14 ms-2" (click)="editMode = false">انصراف</button>
+                        <button class="btn btn-outline-danger f-14 ms-2" *ngIf="modelForm.id" (confirm)="deleteZaer()"
+                            mwlConfirmationPopover>حذف</button>
+                        <button class="btn btn-info f-14 text-white" (click)="saveZaer()">تایید</button>
+                    </div>
+                </li>
+            </ul>
+
+
+        </div>
+        <!-- <div class="w-100 float-end">
+            <textarea class="form-control mt-4" rows="8" placeholder="توضیحات"></textarea>
+        </div> -->
+    </div>
+    <div class="col-lg-6">
+        <div class=" bg-white mb-5 mt-4 p-3 rounded-4 w-100 float-end ">
+            <div class="w-100 float-end d-flex justify-content-between">
+                <h4 class="text-info-custom float-end">لیست ترددها</h4>
+
+                <div class="d-flex">
+                    <span class="float-start f-14 mt-2 ms-2">تعداد کل تردد: </span>
+                    <span class="alert alert-secondary border-0 px-4 float-start py-2 f-14 d-flex align-items-center">{{
+                        model.total || 0 }}
+                    </span>
+                </div>
+
+            </div>
+            <div class="w-100 float-end table-responsive scroller">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-muted text-center">نوع تردد</th>
+                            <th scope="col" class="text-muted text-center">زمان</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of model.traffic; let i = index">
+                            <ng-container *ngIf="{ index: model.traffic.length - i } as row">
+                                <td class="align-items-center d-flex justify-content-center">
+                                    <i class="icon-fo-checked-filled text-info-custom f-20" *ngIf="(row.index % 2)"></i>
+                                    <i class="icon-fo-circle-close-filled text-danger-custom f-20"
+                                        *ngIf="!(row.index % 2)"></i>
+                                    {{ (row.index % 2) ? 'ورود' : 'خروج'}}
+                                </td>
+                                <td class="text-center">
+                                    <span class="date-style">{{ item.date | jalali }}</span>
+                                </td>
+                            </ng-container>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

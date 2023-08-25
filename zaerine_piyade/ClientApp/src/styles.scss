@@ -1,0 +1,106 @@
+@font-face {
+  font-family: "iranYekan";
+  src: url(./assets/fonts/ttf/iranyekanwebregularfanum.ttf) format("ttf"),
+    url(./assets/fonts/woff/iranyekanwebregularfanum.woff) format("woff"),
+    url(./assets/fonts/eot/iranyekanwebregularfanum.eot) format("eot");
+}
+
+.f-11 {
+  font-size: 11px !important;
+}
+
+.f-12 {
+  font-size: 12px !important;
+}
+
+.f-14 {
+  font-size: 14px !important;
+}
+.f-20 {
+  font-size: 20px;
+}
+
+body {
+  background-color: #f5f5f5 !important;
+  direction: rtl;
+  font-family: "iranYekan" !important;
+}
+
+.btn-info {
+  background: #25a4ad !important;
+  border-color: #25a4ad !important;
+}
+
+.radius-12 {
+  border-radius: 12px !important;
+}
+.radius-20 {
+  border-radius: 20px !important;
+}
+.btn-outline-info {
+  border-color: #25a4ad !important;
+  color: #25a4ad !important;
+}
+.btn-outline-info:hover {
+  background-color: #25a4ad !important;
+  color: #fff !important;
+}
+.text-info-custom {
+  color: #25a4ad !important;
+}
+.text-danger-custom {
+  color: #ff8c8c;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #e0e3e9;
+  border-radius: 3px;
+}
+.pointer {
+  cursor: pointer;
+}
+.date-style {
+  letter-spacing: 0.1rem;
+}
+
+mwl-confirmation-popover-window {
+  .popover-bottom {
+    top: 0.5rem !important;
+  }
+  .popover-header {
+    text-align: center;
+    font-size: 0.9rem;
+    background-color: #fff;
+  }
+  .popover-body {
+    p {
+      display: none;
+    }
+    button {
+      padding: 0.1rem 0.4rem;
+      margin: 0 0.1rem;
+    }
+  }
+  .popover-arrow {
+    margin-top: -0.5rem !important;
+    &::before {
+      top: -0.5rem !important;
+      right: 0.2rem !important;
+    }
+    &::after {
+      top: -0.45rem !important;
+      right: 0.2rem !important;
+    }
+  }
+}

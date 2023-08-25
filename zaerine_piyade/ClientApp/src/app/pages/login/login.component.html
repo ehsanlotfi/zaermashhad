@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="align-items-center col-12 d-flex justify-content-center vh-100">
+        <div class="main-login">
+            <form (keypress.enter)="login()">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <img src="assets/img/login.svg" class="login-img mt-5">
+                    </div>
+                    <div class="col-10 mx-auto mt-4">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control f-14 radius-12" id="floatingInput"
+                                [(ngModel)]="model.username" name="username" placeholder="نام کاربری">
+                            <label for="floatingInput" class="f-14 text-muted">نام کاربری</label>
+                        </div>
+                    </div>
+                    <div class="col-10 mx-auto">
+                        <div class="form-floating">
+                            <input [type]="showPass ? 'text' : 'password'" class="form-control f-14 text-end radius-12"
+                                id="floatingPassword" [(ngModel)]="model.password" name="password"
+                                placeholder="کلمه عبور">
+                            <label for="floatingPassword" class="f-14 text-muted">کلمه عبور</label>
+                            <i [class.icon-fo-eye]="showPass" [class.icon-fo-eye-close]="!showPass"
+                                (click)="showPass = !showPass"
+                                class="pointer icon-pass"></i>
+                        </div>
+                    </div>
+                    <div class="col-10 mx-auto  mt-3">
+                        <button class="btn btn-info w-100 py-3 text-white radius-12"
+                            [disabled]="!model.username || !model.password" (click)="login()">ورود</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

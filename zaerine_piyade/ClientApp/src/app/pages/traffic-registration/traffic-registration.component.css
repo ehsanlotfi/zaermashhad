@@ -1,0 +1,19 @@
+.btn-search{
+    position: absolute;
+    left: 15px;
+    top: 3px;
+}
+.rotate{
+    transform: rotate(90deg);
+}
+.alert.alert-info{
+    background: #EDFAF5;
+border-radius: 15px;
+border: none;
+
+}
+.scroller{
+    height:70vh;
+    overflow-y: auto;
+}
+
