@@ -20,13 +20,13 @@ namespace zaerine_piyade.Controllers
         }
 
         [HttpGet("registr/{ZaerId}")]
-        public ActionResult<List<TrafficOutputDto>> Registr(int ZaerId)
+        public ActionResult<List<TrafficOutputDto>> Registr(string ZaerId)
         {
             return _zaer.TrafficRegistration(ZaerId);
         }
 
         [HttpGet("delete/{ZaerId}")]
-        public ActionResult<int> Delete(int ZaerId)
+        public ActionResult<int> Delete(string ZaerId)
         {
             return _zaer.deleteZaer(ZaerId);
         }
@@ -41,6 +41,12 @@ namespace zaerine_piyade.Controllers
         public ActionResult<int> SaveZaer(ZaerModel model)
         {
             return _zaer.SaveZaer(model);
+        }
+
+        [HttpGet("zaer-list/{CaravanId}")]
+        public ActionResult<List<ZaerModel>> ZaerList(int CaravanId)
+        {
+            return _zaer.ZaerList(CaravanId);
         }
     }
 }

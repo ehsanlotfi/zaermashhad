@@ -8,10 +8,11 @@ namespace Repository
 {
     public interface IZaerRepository
     {
-        List<TrafficOutputDto> TrafficRegistration(int ZaerId);
+        List<TrafficOutputDto> TrafficRegistration(string NationalCode);
         List<TeamReportDto> TeamReport();
+        List<ZaerModel> ZaerList(int id);
         int SaveZaer(ZaerModel model);
-        int deleteZaer(int Id);
+        int deleteZaer(string Id);
     }
 
     public class ZaerRepository : IZaerRepository
@@ -23,31 +24,29 @@ namespace Repository
             _configuration = configuration;
         }
 
-        public List<TrafficOutputDto> TrafficRegistration(int ZaerId)
+        public List<TrafficOutputDto> TrafficRegistration(string NationalCode)
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-
-            string currentDate = DateTime.Now.ToString("yyyy/mm/ddTHH:mm:ss");
-            string insertQuery = "INSERT INTO Traffic (ZaerId, Date) Values(@ZaerId, @Date)";
-            int id = connection.Execute(insertQuery, new { ZaerId = ZaerId, Date = DateTime.Now });
+            string insertQuery = "INSERT INTO Traffic (NationalCode, Date) Values(@NationalCode, @Date)";
+            int id = connection.Execute(insertQuery, new { NationalCode = NationalCode, Date = DateTime.Now });
 
             string selectQuery = @"SELECT 
                                         Z.Id, 
                                         Z.Fullname, 
                                         Z.NationalCode, 
                                         Z.Sex, 
-                                        Z.Team, 
-                                        Z.TeamAdmin, COUNT(Traffic.ZaerId) as Total 
-                                        FROM Zaer as Z LEFT JOIN Traffic ON Traffic.ZaerId = Z.Id 
-                                        WHERE Z.Id = @Id GROUP BY Z.Id, Z.Fullname, Z.NationalCode, Z.Sex, Z.Team, Z.TeamAdmin";
+                                        Z.CaravanId, 
+                                        COUNT(Traffic.NationalCode) as Total 
+                                        FROM Zaer as Z LEFT JOIN Traffic ON Traffic.NationalCode = Z.NationalCode 
+                                        WHERE Z.NationalCode = @NationalCode GROUP BY Z.Id, Z.Fullname, Z.NationalCode, Z.Sex, Z.CaravanId";
 
 
-            List<TrafficOutputDto> trafficInfo = connection.Query<TrafficOutputDto>(selectQuery, new { Id = ZaerId }).ToList();
+            List<TrafficOutputDto> trafficInfo = connection.Query<TrafficOutputDto>(selectQuery, new { NationalCode = NationalCode }).ToList();
 
             if (trafficInfo.Count() != 0)
             {
-                string selectTrafficQuery = "SELECT Date FROM Traffic WHERE ZaerId = @Id  ORDER BY Date DESC";
-                List<DateList> trafficList = connection.Query<DateList>(selectTrafficQuery, new { Id = ZaerId }).ToList();
+                string selectTrafficQuery = "SELECT Date FROM Traffic WHERE NationalCode = @NationalCode  ORDER BY Date DESC";
+                List<DateList> trafficList = connection.Query<DateList>(selectTrafficQuery, new { NationalCode = NationalCode }).ToList();
                 trafficInfo[0].Traffic = trafficList;
             }
 
@@ -55,21 +54,29 @@ namespace Repository
             return trafficInfo;
         }
 
+        public List<ZaerModel> ZaerList(int id)
+        {
+            var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            string selectQuery = $@"SELECT  Fullname, NationalCode, Sex, CaravanId  FROM Zaer WHERE CaravanId = {id} ORDER BY Id DESC";
+            List<ZaerModel> result = connection.Query<ZaerModel>(selectQuery).ToList();
+            return result;
+        }
+        
         public List<TeamReportDto> TeamReport()
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string selectQuery = @"select Z.Team,Z.Sex, COUNT(T.ZaerId) as TotalTraffic,
-                                    COUNT(distinct(T.ZaerId)) as TotalRegister,
+            string selectQuery = @"select Z.CaravanId,Z.Sex, COUNT(T.NationalCode) as TotalTraffic,
+                                    COUNT(distinct(T.NationalCode)) as TotalRegister,
 
                                     (select COUNT(cnt) as cnt from (select 1 as cnt from Traffic
-                                     where ZaerId in (select Id from Zaer where Team = Z.Team and sex = Z.Sex)
-                                     group by ZaerId
+                                     where NationalCode in (select NationalCode from Zaer where CaravanId = Z.CaravanId and sex = Z.Sex)
+                                     group by NationalCode
                                      HAVING  COUNT(Traffic.Id) % 2 = 1) as tb1) as TotalInside,
 
 
                                     COUNT(DISTINCT Z.Id) TotalZaer FROM Zaer as Z
-                                    LEFT JOIN Traffic as T on T.ZaerId=Z.Id
-                                    GROUP BY Z.Team,Z.Sex";
+                                    LEFT JOIN Traffic as T on T.NationalCode=Z.NationalCode
+                                    GROUP BY Z.CaravanId,Z.Sex";
 
 
             List<TeamReportDto> result = connection.Query<TeamReportDto>(selectQuery).ToList();
@@ -77,17 +84,24 @@ namespace Repository
             return result;
         }
 
-        public int deleteZaer(int Id)
+        public int deleteZaer(string Id)
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
 
-            string deleteZaer = "DELETE Zaer WHERE Id = @Id";
-            string deleteTraffic = "DELETE Traffic WHERE ZaerId = @Id";
+            string deleteZaer = "DELETE Zaer WHERE NationalCode = @Id";
+            string deleteTraffic = "DELETE Traffic WHERE NationalCode = @Id";
 
-            connection.Execute(deleteTraffic, new { Id = Id });
-            connection.Execute(deleteZaer, new { Id = Id });
-
-            return Id;
+            try
+            {
+                connection.Execute(deleteTraffic, new { Id = Id });
+                connection.Execute(deleteZaer, new { Id = Id });
+                return 1;
+            }
+            catch (Exception)
+            {
+                return 0;
+                throw;
+            }
         }
 
         public int SaveZaer(ZaerModel model)
@@ -97,41 +111,44 @@ namespace Repository
 
             model.Fullname = model.Fullname == null ? "NULL" : $"N'{model.Fullname}'";
             model.NationalCode = model.NationalCode == null ? "NULL" : $"N'{model.NationalCode}'";
-            model.Sex = model.Sex == null ? 2 : model.Sex;
-            model.Team = model.Team == null ? "NULL" : $"N'{model.Team}'";
-            model.TeamAdmin = model.TeamAdmin == null ? "NULL" : $"N'{model.TeamAdmin}'";
+            model.Sex = model.Sex == null ? 1 : model.Sex;
+            model.CaravanId = model.CaravanId == null ? 1 : model.CaravanId;
 
-            string query = "";
-            int result = model.Id != null ? (model.Id ?? default(int)) : 0;
+            string query = 
+                $@"IF EXISTS (SELECT 1 FROM Zaer WHERE NationalCode = {model.NationalCode})
+                BEGIN    
+                        UPDATE Zaer
+                        SET Fullname = {model.Fullname}, Sex = {model.Sex}, CaravanId = {model.CaravanId}   
+                        WHERE NationalCode = {model.NationalCode}
+                END
+                  ELSE
+                BEGIN
+                    INSERT INTO Zaer (Fullname, NationalCode, Sex, CaravanId)
+                    VALUES ({model.Fullname}, {model.NationalCode}, {model.Sex}, {model.CaravanId})
+                END";
 
-            if (model.Id == null)
+            try
             {
-                query = $@"INSERT INTO Zaer (Fullname, NationalCode, Sex, Team, TeamAdmin)
-                                OUTPUT INSERTED.Id
-                                VALUES( {model.Fullname}, {model.NationalCode}, {model.Sex}, {model.Team}, {model.TeamAdmin})";
-                var id = connection.QuerySingle<int>(query);
-                result = id;
-            }
-            else
-            {
-                query = $@"UPDATE Zaer SET Fullname = {model.Fullname}, NationalCode = {model.NationalCode}, Sex = {model.Sex}, Team = {model.Team}, TeamAdmin = {model.TeamAdmin} WHERE id = {model.Id}";
                 connection.Execute(query);
-
+                return 1;
+            }
+            catch (Exception)
+            {
+                return 0;
+                throw;
             }
 
-            return result;
+            
         }
 
     }
 
     public class ZaerModel
     {
-        public int? Id { get; set; } = null;
         public string? Fullname { get; set; }
         public string? NationalCode { get; set; }
         public int? Sex { get; set; }
-        public string? Team { get; set; }
-        public string? TeamAdmin { get; set; }
+        public int? CaravanId { get; set; }
     }
 
 
@@ -146,8 +163,7 @@ namespace Repository
         public string? Fullname { get; set; }
         public string? NationalCode { get; set; }
         public Int16 Sex { get; set; }
-        public string? Team { get; set; }
-        public string? TeamAdmin { get; set; }
+        public int? CaravanId { get; set; }
         public int Total { get; set; }
         public List<DateList>? Traffic { get; set; }
     }
@@ -165,12 +181,11 @@ namespace Repository
 
     public class TeamReportDto
     {
-        public string? Team { get; set; }
+        public int CaravanId { get; set; }
         public int Sex { get; set; }
         public int TotalTraffic { get; set; }
         public int TotalRegister { get; set; }
         public int TotalInside { get; set; }
         public int TotalZaer { get; set; }
     }
-
 }

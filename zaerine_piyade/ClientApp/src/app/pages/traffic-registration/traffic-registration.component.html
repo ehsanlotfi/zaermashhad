@@ -2,14 +2,18 @@
     <div class="col-lg-6 position-relative">
         <form (keypress.enter)="registrZaer()" (ngSubmit)="registrZaer()">
             <input autocomplete="none" [disabled]="loading" autofocus #inputZaer onlyNumber type="text"
-                class="form-control py-2" (input)="registrZaer()" placeholder="جستجو" [(ngModel)]="zaerId"
-                name="zaerId">
+                class="form-control py-2" (input)="registrZaer()" placeholder="جستجو" [(ngModel)]="nationalCode"
+                name="nationalCode">
             <button class="btn btn-info f-14 px-4 text-white btn-search"
-                [disabled]="(zaerId && zaerId.length != 4) || loading">ثبت
+                [disabled]="(nationalCode && nationalCode.length != 10) || loading">ثبت
                 تردد</button>
         </form>
     </div>
     <div class="col-lg-6 text-start mt-3 mt-lg-1 d-flex justify-content-end gap-1">
+        <button class="btn btn-outline-info f-14" [routerLink]="['/zaer']">
+            <i class="icon-fo-slide-page f-14 ms-2"></i>
+            مدیریت زائرین
+        </button>
         <button class="btn btn-outline-info f-14" [routerLink]="['/reports']">
             <i class="icon-fo-slide-page f-14 ms-2"></i>
             گزارشات
@@ -28,9 +32,9 @@
     <div class="col-lg-6 bg-white mb-5 mt-4 p-3 rounded-4">
         <div class="w-100 float-end">
             <h4 class="text-info-custom float-end">
-                <span *ngIf="model.id"
+                <span *ngIf="model.nationalCode "
                     class="alert alert-info float-start py-2 f-14 d-flex align-items-center me-2">شناسه <b
-                        class="me-2">{{model.id}}</b> </span>
+                        class="me-2">{{model.nationalCode}}</b> </span>
                 مشخصات
             </h4>
             <ng-container *ngIf="model.total != null">
@@ -50,7 +54,7 @@
         </div>
         <div class="w-100 float-end">
 
-            <ul class="list-group list-group-flush px-0" *ngIf="!editMode">
+            <ul class="list-group list-group-flush px-0">
                 <li class="list-group-item py-3">
                     <span>نام:</span>
                     <span class="float-start">{{ model.fullname }}</span>
@@ -66,63 +70,14 @@
                 </li>
                 <li class="list-group-item py-3">
                     <span>نام کاروان:</span>
-                    <span class="float-start">{{ model.team }}</span>
+                    <span class="float-start">{{ model.caravanId | caravan : 'name'}}</span>
                 </li>
                 <li class="list-group-item py-3">
                     <span>مسئول کاروان:</span>
-                    <span class="float-start">{{ model.teamAdmin }}</span>
-                </li>
-                <li class="list-group-item ">
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-outline-info f-14 ms-2" (click)="editZaer()" *ngIf="model.id"
-                            (click)="editMode = true">ویرایش</button>
-                        <button class="btn btn-outline-info f-14 ms-2" (click)="newZaer()">جدید</button>
-                    </div>
+                    <span class="float-start">{{ model.caravanId | caravan : 'admin'}}</span>
                 </li>
             </ul>
-
-            <ul class="list-group list-group-flush px-0" *ngIf="editMode">
-                <li class="list-group-item py-3 d-flex">
-                    <span>نام:</span>
-                    <input type="text" class="form-control-plaintext p-0 me-2 w-50" [(ngModel)]="modelForm.fullname">
-                </li>
-                <li class="list-group-item py-3 d-flex">
-                    <span>جنسیت:</span>
-                    <div class="w-50 d-flex">
-                        <div class="ms-2 me-2"><input class="ms-1" name="sex" type="radio" [value]="1"
-                                [(ngModel)]="modelForm.sex"><span>آقا</span></div>
-                        <div><input class="ms-1" name="sex" type="radio" [value]="0"
-                                [(ngModel)]="modelForm.sex"><span>خانم</span></div>
-                    </div>
-                </li>
-                <li class="list-group-item py-3 d-flex">
-                    <span>کدملی:</span>
-                    <input type="text" class="form-control-plaintext p-0 me-2 w-50"
-                        [(ngModel)]="modelForm.nationalCode">
-                </li>
-                <li class="list-group-item py-3 d-flex">
-                    <span>نام کاروان:</span>
-                    <input type="text" class="form-control-plaintext p-0 me-2 w-50" [(ngModel)]="modelForm.team">
-                </li>
-                <li class="list-group-item py-3 d-flex">
-                    <span>مسئول کاروان:</span>
-                    <input type="text" class="form-control-plaintext p-0 me-2 w-50" [(ngModel)]="modelForm.teamAdmin">
-                </li>
-                <li class="list-group-item ">
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-outline-info f-14 ms-2" (click)="editMode = false">انصراف</button>
-                        <button class="btn btn-outline-danger f-14 ms-2" *ngIf="modelForm.id" (confirm)="deleteZaer()"
-                            mwlConfirmationPopover>حذف</button>
-                        <button class="btn btn-info f-14 text-white" (click)="saveZaer()">تایید</button>
-                    </div>
-                </li>
-            </ul>
-
-
         </div>
-        <!-- <div class="w-100 float-end">
-            <textarea class="form-control mt-4" rows="8" placeholder="توضیحات"></textarea>
-        </div> -->
     </div>
     <div class="col-lg-6">
         <div class=" bg-white mb-5 mt-4 p-3 rounded-4 w-100 float-end ">

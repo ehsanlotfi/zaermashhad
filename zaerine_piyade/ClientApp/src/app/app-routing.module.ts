@@ -4,6 +4,7 @@ import { AuthGuard } from 'src/app/guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { TrafficRegistrationComponent } from './pages/traffic-registration/traffic-registration.component';
+import { ZaerRegistrationComponent } from './pages/zaer-registration/zaer-registration.component';
 
 
 const routes: Routes = [
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'reports', component: ReportsComponent, canActivate:[AuthGuard] },
   { path: 'trafic', component: TrafficRegistrationComponent, canActivate:[AuthGuard] },
+  { path: 'zaer', component: ZaerRegistrationComponent, canActivate:[AuthGuard] },
 
 ];
 

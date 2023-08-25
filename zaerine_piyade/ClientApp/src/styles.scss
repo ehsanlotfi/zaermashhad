@@ -16,6 +16,7 @@
 .f-14 {
   font-size: 14px !important;
 }
+
 .f-20 {
   font-size: 20px;
 }
@@ -26,6 +27,19 @@ body {
   font-family: "iranYekan" !important;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0;
+  /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+
 .btn-info {
   background: #25a4ad !important;
   border-color: #25a4ad !important;
@@ -34,23 +48,29 @@ body {
 .radius-12 {
   border-radius: 12px !important;
 }
+
 .radius-20 {
   border-radius: 20px !important;
 }
+
 .btn-outline-info {
   border-color: #25a4ad !important;
   color: #25a4ad !important;
 }
+
 .btn-outline-info:hover {
   background-color: #25a4ad !important;
   color: #fff !important;
 }
+
 .text-info-custom {
   color: #25a4ad !important;
 }
+
 .text-danger-custom {
   color: #ff8c8c;
 }
+
 /* width */
 ::-webkit-scrollbar {
   width: 5px;
@@ -67,9 +87,11 @@ body {
   background: #e0e3e9;
   border-radius: 3px;
 }
+
 .pointer {
   cursor: pointer;
 }
+
 .date-style {
   letter-spacing: 0.1rem;
 }
@@ -78,29 +100,39 @@ mwl-confirmation-popover-window {
   .popover-bottom {
     top: 0.5rem !important;
   }
+
   .popover-header {
     text-align: center;
     font-size: 0.9rem;
     background-color: #fff;
   }
+
   .popover-body {
     p {
       display: none;
     }
+
     button {
       padding: 0.1rem 0.4rem;
       margin: 0 0.1rem;
     }
   }
+
   .popover-arrow {
     margin-top: -0.5rem !important;
+
     &::before {
       top: -0.5rem !important;
       right: 0.2rem !important;
     }
+
     &::after {
       top: -0.45rem !important;
       right: 0.2rem !important;
     }
   }
+}
+
+.very-small {
+  font-size: 0.6rem;
 }

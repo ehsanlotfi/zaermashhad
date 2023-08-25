@@ -9,12 +9,13 @@ import { TrafficRegistrationComponent } from './pages/traffic-registration/traff
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
-import { GlobalService } from 'src/app/global.service';
+import { CaravanIdiPipe, GlobalService } from 'src/app/global.service';
 import { OnlyNumberDirective } from 'src/app/directives/only-number.directive';
 import { JalaliPipe } from 'src/app/pipes/moment.pipe';
 import { AuthGuard } from 'src/app/guards/auth.guard';
 import { InterceptorService } from './core/interceptors.service';
 import { ConfirmationPopoverModule } from "angular-confirmation-popover";
+import { ZaerRegistrationComponent } from './pages/zaer-registration/zaer-registration.component';
 export function initWithDependencyFactory(
   globalSvc: GlobalService
 ) {
@@ -35,8 +36,10 @@ export function initWithDependencyFactory(
     LoginComponent,
     ReportsComponent,
     TrafficRegistrationComponent,
+    ZaerRegistrationComponent,
     OnlyNumberDirective,
-    JalaliPipe
+    JalaliPipe,
+    CaravanIdiPipe
   ],
   imports: [
     BrowserModule,

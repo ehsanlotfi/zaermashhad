@@ -9,6 +9,7 @@ export const ROUTERAPI = {
     saveZaer: `${host}api/zaer/save-zaer`,
     zaer: `${host}api/zaer`,
     getAllZaer: `${host}api/zaer/get-all-zaer`,
+    zaerList: `${host}api/zaer/zaer-list/`,
     trafficReport: `${host}api/zaer/traffic-report`,
     teamReport: `${host}api/zaer/team-report`,
 }

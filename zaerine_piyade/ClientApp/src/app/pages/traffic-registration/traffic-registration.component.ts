@@ -11,7 +11,7 @@ import * as models from 'src/app/global.model';
 })
 export class TrafficRegistrationComponent implements OnInit {
 
-  zaerId: any = null;
+  nationalCode: any = null;
   loading: boolean = false;
   editMode: boolean = false;
 
@@ -19,8 +19,7 @@ export class TrafficRegistrationComponent implements OnInit {
     fullname: "",
     nationalCode: "",
     sex: undefined,
-    team: "",
-    teamAdmin: "",
+    caravanId: 0,
     total: null,
     traffic: []
   };
@@ -29,8 +28,7 @@ export class TrafficRegistrationComponent implements OnInit {
     fullname: "",
     nationalCode: "",
     sex: undefined,
-    team: "",
-    teamAdmin: "",
+    caravanId: 0,
     total: null,
     traffic: []
   };
@@ -46,11 +44,11 @@ export class TrafficRegistrationComponent implements OnInit {
   }
 
   registrZaer() {
-    if (this.zaerId.toString().length != 4) return;
+    if (this.nationalCode.toString().length != 10) return;
     this.loading = true;
 
 
-    this.globalSvc.registrZaer(+this.zaerId).subscribe((data: models.RegisterModel[]) => {
+    this.globalSvc.registrZaer(this.nationalCode).subscribe((data: models.RegisterModel[]) => {
 
       if (data.length) {
         this.model = JSON.parse(JSON.stringify(data[0]));
@@ -68,7 +66,7 @@ export class TrafficRegistrationComponent implements OnInit {
 
   clear() {
 
-    this.zaerId = null;
+    this.nationalCode = null;
     this.loading = false;
     setTimeout(() => {
       this.inputZaerElement.first.nativeElement.focus()
@@ -81,8 +79,7 @@ export class TrafficRegistrationComponent implements OnInit {
       fullname: "",
       nationalCode: "",
       sex: undefined,
-      team: "",
-      teamAdmin: "",
+      caravanId: 1,
       total: null,
       traffic: []
     };
@@ -93,35 +90,13 @@ export class TrafficRegistrationComponent implements OnInit {
     this.modelForm = JSON.parse(JSON.stringify(this.model));
   }
 
-  saveZaer() {
-    this.globalSvc.saveZaer(this.modelForm).subscribe((id: number) => {
-      this.model.id = id;
-      this.modelForm.id = id;
-      this.model = JSON.parse(JSON.stringify(this.modelForm));
-      this.editMode = false;
-      this.toastr.success("عملیات با موفقیت انجام شد");
-    }, err => {
-      this.toastr.error("خطایی رخ داده است");
-    });
-  }
-
-  deleteZaer() {
-    this.globalSvc.deleteZaer(this.modelForm.id as number).subscribe((id: any) => {
-      this.editMode = false;
-      this.clearModle();
-      this.toastr.success("عملیات با موفقیت انجام شد");
-    }, err => {
-      this.toastr.error("خطایی رخ داده است");
-    });
-  }
 
   clearModle() {
     this.model = {
       fullname: "",
       nationalCode: "",
       sex: undefined,
-      team: "",
-      teamAdmin: "",
+      caravanId: 1,
       total: null,
       traffic: []
     };

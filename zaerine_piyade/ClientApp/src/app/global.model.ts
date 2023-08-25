@@ -7,19 +7,16 @@ export interface RegisterModel {
   fullname: string;
   nationalCode: string;
   sex?: number;
-  team: string;
-  teamAdmin: string;
+  caravanId: number;
   total: any;
   traffic: DateModel[];
 }
 
-export interface ZaerModel {
-  id?: number;
-  fullname: string;
-  nationalCode: string;
-  sex?: number;
-  team?: string;
-  teamAdmin?: string;
+export class ZaerModel {
+  fullname: string = "";
+  nationalCode: string = "";
+  sex: number = 1;
+  caravanId?: number = 1;
 }
 
 export interface TotalModel {
@@ -32,7 +29,7 @@ export interface TrafficSexModel {
 }
 
 export interface TeamReportModel {
-  team: string,
+  caravanId: number,
   sex: number,
   totalTraffic: number,
   totalZaer: number,

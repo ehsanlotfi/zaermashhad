@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="col-12 bg-white py-2 d-flex">
+    <div class="d-flex w-100">
+      <button class="btn text-info-custom d-flex" [routerLink]="['/trafic']">
+        <i class="icon-fo-arrow-right-curved2 f-20 fw-bold ms-1"></i>
+        بازگشت
+      </button>
+      <select class="form-control form-control-sm w-25 me-2" [(ngModel)]="zaer.caravanId">
+        <option *ngFor="let caravan of caravans" [value]="caravan.id">{{ caravan.name }} ( {{
+          caravan.admin }} ) </option>
+      </select>
+      <button class="btn btn-primary btn-sm me-2" (click)="getZaerList()">نمایش کاروان</button>
+    </div>
+    <div>
+      <div *ngIf="loading" class="spinner-border text-primary"> </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4 mx-4" id="main-status">
+  <div class="p-0 pb-3 mb-3 border-bottom">
+    <div class="d-flex gap-3">
+      <input type="text" class="form-control" #nationalCodeDom [(ngModel)]="zaer.nationalCode"
+        placeholder="کد ملی ( بارکد )">
+      <input type="text" class="form-control" [(ngModel)]="zaer.fullname" placeholder="نام و نام خانوادگی">
+      <select class="form-control" [(ngModel)]="zaer.sex">
+        <option *ngFor="let sex of sexs" [value]="sex.id">{{ sex.name }}</option>
+      </select>
+      <button class="btn btn-success me-2" [disabled]="!zaer.nationalCode || !zaer.fullname"
+        (click)="saveZaer()">ذخیره</button>
+    </div>
+    <p class="very-small mb-0 me-2 text-warning-emphasis"> کد ملی تکراری، رکورد را بروزرسانی میکند</p>
+  </div>
+
+
+  <table class="table table-width table-bordered">
+    <thead>
+      <tr>
+        <th class="text-muted text-center">کد ملی ( بارکد )</th>
+        <th class="text-muted text-center">نام و نام خانوادگی</th>
+        <th class="text-muted text-center">جنسیت</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let zaeritem of zaerList">
+        <td>{{ zaeritem.nationalCode }}</td>
+        <td>{{ zaeritem.fullname }}</td>
+        <td>{{ zaeritem.sex ? 'آقا' : 'خانم' }}</td>
+        <th>
+          <button class="btn btn-sm btn-warning" (click)="editZaer(zaeritem)">ویرایش</button>
+          <button class="btn btn-sm btn-danger me-1" mwlConfirmationPopover
+            (confirm)="deleteZaer(zaeritem.nationalCode)">حذف</button>
+        </th>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

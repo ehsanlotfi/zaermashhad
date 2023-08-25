@@ -13,7 +13,7 @@ export class ReportsComponent implements OnInit {
 
   teamData:
     {
-      name: string,
+      name: number,
 
       totalZaer: number,
       totalZaerMan: number,
@@ -66,8 +66,8 @@ export class ReportsComponent implements OnInit {
       const group = data.reduce(
         (result: any, item) => ({
           ...result,
-          [item["team"]]: [
-            ...(result[item["team"]] || []),
+          [item["caravanId"]]: [
+            ...(result[item["caravanId"]] || []),
             item,
           ],
         }),

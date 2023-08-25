@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Pipe, PipeTransform } from '@angular/core';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { ROUTERAPI } from 'src/app/_api-router';
@@ -38,20 +38,24 @@ export class GlobalService {
 
 
 
-    registrZaer(zaerId: number) {
-        return this.http.get<models.RegisterModel[]>(`${ROUTERAPI.registr}${zaerId}`);
+    registrZaer(nationalCode: string) {
+        return this.http.get<models.RegisterModel[]>(`${ROUTERAPI.registr}${nationalCode}`);
     }
 
-    deleteZaer(zaerId: number) {
-        return this.http.get(`${ROUTERAPI.delete}${zaerId}`);
+    deleteZaer(nationalCode: string) {
+        return this.http.get(`${ROUTERAPI.delete}${nationalCode}`);
     }
 
     saveZaer(model: models.ZaerModel) {
-        return this.http.post<number>(ROUTERAPI.saveZaer, model);
+        return this.http.post<string>(ROUTERAPI.saveZaer, model);
     }
 
     getAllZaer() {
         return this.http.get<models.TotalModel[]>(ROUTERAPI.getAllZaer);
+    }
+
+    zaerList(caravanId: number) {
+        return this.http.get<models.ZaerModel[]>(`${ROUTERAPI.zaerList}${caravanId}`);
     }
 
     trafficReport() {
@@ -62,4 +66,35 @@ export class GlobalService {
         return this.http.get<models.TeamReportModel[]>(ROUTERAPI.teamReport);
     }
 
+}
+
+@Pipe({
+    name: 'caravan'
+})
+export class CaravanIdiPipe implements PipeTransform {
+    transform(caravanId: number, type: 'name' | 'admin'): string {
+
+        if (!caravanId) return "";
+
+        const caravans = [
+            { id: 1, name: "انصارالمهدی", admin: "آقای یعقوبی" },
+            { id: 2, name: "محبان حضرت فاطمه معصومه (س)", admin: "خانم اصغری" },
+            { id: 3, name: "چهارده معصوم (ع)", admin: "خانم اسکندری ثانی" },
+            { id: 4, name: "حضرت رقیه (س)", admin: "خانم فرزین" },
+            { id: 5, name: "منتظران ظهور", admin: "آقای اسکندری" },
+            { id: 6, name: "منتظران ظهور", admin: "خانم اسکندری" },
+            { id: 7, name: "قمر بنی هاشم (ع)", admin: "آقای یادگاری" },
+            { id: 8, name: "حضرت فاطمه الزهرا (س)", admin: "خانم عرب قرایی" },
+            { id: 9, name: "ثارالله", admin: "خانم توکلی" },
+            { id: 10, name: "ثاره الله", admin: "آقای کراتی" },
+            { id: 11, name: "حضرت معصومه (س)", admin: "خانم برزگر" },
+            { id: 12, name: "امام زین العابدین", admin: "خانم زین العابدین" },
+            { id: 13, name: "پیروا حضرت زهرا (س)", admin: "آقای دهقان پور" },
+            { id: 14, name: "خدام خواهران", admin: "خانم علوی" },
+            { id: 15, name: "خدام برادران", admin: "آقای حسین زاده" },
+        ]
+
+        return caravans.find(f => f.id == caravanId)![type].toString();
+
+    }
 }
