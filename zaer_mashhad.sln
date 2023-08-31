@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "zaer_mashhad", "zaerine_piyade\zaer_mashhad.csproj", "{91B5BC05-2541-439F-8442-3BE310D150A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "zaer_mashhad", "zaer_mashhad\zaer_mashhad.csproj", "{91B5BC05-2541-439F-8442-3BE310D150A3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{32C8AE2B-25A8-431D-98AF-A7D6C539E30B}"
 EndProject
