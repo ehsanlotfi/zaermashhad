@@ -57,7 +57,7 @@ namespace Repository
         public List<ZaerModel> ZaerList(int id)
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string selectQuery = $@"SELECT  Fullname, NationalCode, Sex, CaravanId  FROM Zaer WHERE CaravanId = {id} ORDER BY Id DESC";
+            string selectQuery = $@"SELECT  Fullname, NationalCode, Sex, CaravanId, Image  FROM Zaer WHERE CaravanId = {id} ORDER BY Id DESC";
             List<ZaerModel> result = connection.Query<ZaerModel>(selectQuery).ToList();
             return result;
         }
@@ -118,13 +118,13 @@ namespace Repository
                 $@"IF EXISTS (SELECT 1 FROM Zaer WHERE NationalCode = {model.NationalCode})
                 BEGIN    
                         UPDATE Zaer
-                        SET Fullname = {model.Fullname}, Sex = {model.Sex}, CaravanId = {model.CaravanId}   
+                        SET Fullname = {model.Fullname}, Sex = {model.Sex}, CaravanId = {model.CaravanId}, [Image] = N'{model.Image}'       
                         WHERE NationalCode = {model.NationalCode}
                 END
                   ELSE
                 BEGIN
-                    INSERT INTO Zaer (Fullname, NationalCode, Sex, CaravanId)
-                    VALUES ({model.Fullname}, {model.NationalCode}, {model.Sex}, {model.CaravanId})
+                    INSERT INTO Zaer (Fullname, NationalCode, Sex, CaravanId, [Image])
+                    VALUES ({model.Fullname}, {model.NationalCode}, {model.Sex}, {model.CaravanId}, N'{model.Image}')
                 END";
 
             try
@@ -149,6 +149,7 @@ namespace Repository
         public string? NationalCode { get; set; }
         public int? Sex { get; set; }
         public int? CaravanId { get; set; }
+        public string? Image { get; set; }
     }
 
 

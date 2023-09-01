@@ -16,44 +16,66 @@
     </div>
   </div>
 </div>
-
+<input #imageUploader type="file" (change)="onFileSelected($event)" accept="image/*" class="d-none">
 <div class="row mt-4 mx-4" id="main-status">
-  <div class="p-0 pb-3 mb-3 border-bottom">
-    <div class="d-flex gap-3">
-      <input type="text" class="form-control" #nationalCodeDom [(ngModel)]="zaer.nationalCode"
-        placeholder="کد ملی ( بارکد )">
-      <input type="text" class="form-control" [(ngModel)]="zaer.fullname" placeholder="نام و نام خانوادگی">
-      <select class="form-control" [(ngModel)]="zaer.sex">
-        <option *ngFor="let sex of sexs" [value]="sex.id">{{ sex.name }}</option>
-      </select>
-      <button class="btn btn-success me-2" [disabled]="!zaer.nationalCode || !zaer.fullname"
-        (click)="saveZaer()">ذخیره</button>
+  <div class="col-3">
+    <div class="bg-white p-3 rounded-4 d-flex gap-3 flex-column align-items-center min-h-80">
+      <div class="w-100 text-center">
+        <img src="{{ zaer.image || 'assets/img/no-img.jpg' }}" class="pointer zaer-image"
+          (click)="imageUploader.click()">
+      </div>
+      <div class="w-100">
+        <input type="text" class="form-control w-100" #nationalCodeDom [(ngModel)]="zaer.nationalCode"
+          placeholder="کد ملی ( بارکد )">
+        <p class="very-small mb-0 me-2 text-warning-emphasis"> کد ملی تکراری، رکورد را بروزرسانی میکند</p>
+      </div>
+      <div class="w-100">
+        <input type="text" class="form-control w-100" [(ngModel)]="zaer.fullname" placeholder="نام و نام خانوادگی">
+      </div>
+      <div class="w-100">
+        <select class="form-control w-100" [(ngModel)]="zaer.sex">
+          <option *ngFor="let sex of sexs" [value]="sex.id">{{ sex.name }}</option>
+        </select>
+      </div>
+      <div class="w-100">
+        <button class="btn btn-success  w-100" [disabled]="!zaer.nationalCode || !zaer.fullname"
+          (click)="saveZaer()">ذخیره</button>
+      </div>
     </div>
-    <p class="very-small mb-0 me-2 text-warning-emphasis"> کد ملی تکراری، رکورد را بروزرسانی میکند</p>
   </div>
 
+  <div class="col-9">
+    <div class="bg-white p-3 rounded-4 min-h-80">
+      <table class="table table-bordered w-100">
+        <thead>
+          <tr>
+            <th>
+              <button (click)="exportExcel()">خروجی اکسل</button>
+            </th>
+            <th class="text-muted text-center">کد ملی ( بارکد )</th>
+            <th class="text-muted text-center">نام و نام خانوادگی</th>
+            <th class="text-muted text-center">جنسیت</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let zaeritem of zaerList">
+            <td class="text-center">
+              <img src="{{ zaeritem.image || 'assets/img/no-img.jpg' }}" class="zaer-image-in-list">
+            </td>
+            <td>{{ zaeritem.nationalCode }}</td>
+            <td>{{ zaeritem.fullname }}</td>
+            <td>{{ zaeritem.sex ? 'آقا' : 'خانم' }}</td>
+            <th>
+              <button class="btn btn-sm btn-warning" (click)="editZaer(zaeritem)">ویرایش</button>
+              <button class="btn btn-sm btn-danger me-1" mwlConfirmationPopover
+                (confirm)="deleteZaer(zaeritem.nationalCode)">حذف</button>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <table class="table table-width table-bordered">
-    <thead>
-      <tr>
-        <th class="text-muted text-center">کد ملی ( بارکد )</th>
-        <th class="text-muted text-center">نام و نام خانوادگی</th>
-        <th class="text-muted text-center">جنسیت</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let zaeritem of zaerList">
-        <td>{{ zaeritem.nationalCode }}</td>
-        <td>{{ zaeritem.fullname }}</td>
-        <td>{{ zaeritem.sex ? 'آقا' : 'خانم' }}</td>
-        <th>
-          <button class="btn btn-sm btn-warning" (click)="editZaer(zaeritem)">ویرایش</button>
-          <button class="btn btn-sm btn-danger me-1" mwlConfirmationPopover
-            (confirm)="deleteZaer(zaeritem.nationalCode)">حذف</button>
-        </th>
-      </tr>
-    </tbody>
-  </table>
+  </div>
 
 </div>

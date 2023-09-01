@@ -17,6 +17,7 @@ export class ZaerModel {
   nationalCode: string = "";
   sex: number = 1;
   caravanId?: number = 1;
+  image?: string = "";
 }
 
 export interface TotalModel {
