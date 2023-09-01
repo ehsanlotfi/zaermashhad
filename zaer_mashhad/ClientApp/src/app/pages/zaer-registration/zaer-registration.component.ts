@@ -59,6 +59,7 @@ export class ZaerRegistrationComponent implements OnInit {
     }, () => {
       this.zaer.fullname = "";
       this.zaer.nationalCode = "";
+      this.zaer.image = "";
       this.renderer.selectRootElement(this.nationalCodeDom.nativeElement).focus();
       this.getZaerList();
     });
