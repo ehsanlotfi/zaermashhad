@@ -69,8 +69,8 @@ namespace Repository
                                     COUNT(distinct(T.Barcode)) as TotalRegister,
 
                                     (select COUNT(cnt) as cnt from (select 1 as cnt from Traffic
-                                     where NationalCode in (select NationalCode from Zaer where CaravanId = Z.CaravanId and sex = Z.Sex)
-                                     group by NationalCode
+                                     where Barcode in (select Id from Zaer where CaravanId = Z.CaravanId and sex = Z.Sex)
+                                     group by Barcode
                                      HAVING  COUNT(Traffic.Id) % 2 = 1) as tb1) as TotalInside,
 
 
