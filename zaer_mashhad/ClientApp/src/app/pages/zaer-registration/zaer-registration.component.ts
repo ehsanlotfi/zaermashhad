@@ -104,7 +104,18 @@ export class ZaerRegistrationComponent implements OnInit {
   exportExcel(): void {
     const fileName = "data.xlsx";
     const worksheetName = "Sheet1";
-    const data = this.zaerList.map(({ image, ...f }) => f);
+    const data: any[] = [];
+
+    this.zaerList.forEach((item: models.ZaerModel) => {
+      data.push({
+        "بارکد": item.id,
+        "نام و نام خانوادگی": item.fullname,
+        "کد ملی": item.nationalCode,
+        "جنسیت": item.sex ? "آقا" : "خانم",
+        "نام کاروان": this.caravans.find(f => f.id == item.caravanId)?.name,
+        "نام مدیر": this.caravans.find(f => f.id == item.caravanId)?.admin,
+      })
+    });
 
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(data);
