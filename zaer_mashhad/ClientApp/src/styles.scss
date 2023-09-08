@@ -5,6 +5,12 @@
     url(./assets/fonts/eot/iranyekanwebregularfanum.eot) format("eot");
 }
 
+@font-face {
+  font-family: "BARCODEFONT";
+  src: url(./assets/fonts/barcode/IDAutomationHC39M.ttf) format("ttf"),
+    url(./assets/fonts/barcode/IDAutomationHC39M.otf) format("opentype");
+}
+
 .f-11 {
   font-size: 11px !important;
 }
@@ -139,4 +145,72 @@ mwl-confirmation-popover-window {
 
 .min-h-80 {
   min-height: 80vh;
+}
+
+body {
+  background: rgb(204, 204, 204);
+}
+
+.page {
+  background: white;
+  background: white;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 0.5cm;
+  justify-content: space-around;
+
+  >.cart {
+    padding: 2mm;
+  }
+}
+
+.page[size="A4"] {
+  width: 21cm;
+  height: 29.7cm;
+  overflow: hidden;
+}
+
+.page[size="A4"][layout="landscape"] {
+  width: 29.7cm;
+  height: 21cm;
+  overflow: hidden;
+}
+
+@media print {}
+
+body,
+.page {
+  background: white;
+  margin: 0;
+  box-shadow: 0;
+
+  .cart {
+
+    .fullname {
+      bottom: 3.8cm;
+      right: 0.5cm;
+      font-size: 0.6rem;
+      font-weight: bold;
+    }
+
+    .national-code {
+      bottom: 3.7cm;
+      right: 4.3cm;
+    }
+
+    .caravan-name {
+      bottom: 2.6cm;
+      right: 0.5cm;
+      font-size: 0.6rem;
+      font-weight: bold;
+    }
+
+    .barcode-font {
+      bottom: 2.5cm;
+      right: 4.6cm;
+      font-family: "BARCODEFONT" !important;
+      font-size: 0.7rem;
+    }
+
+  }
 }

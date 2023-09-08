@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Pipe, PipeTransform } from '@angular/core';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ROUTERAPI } from 'src/app/_api-router';
 import * as models from 'src/app/global.model';
 
@@ -38,8 +38,8 @@ export class GlobalService {
 
 
 
-    registrZaer(nationalCode: string) {
-        return this.http.get<models.RegisterModel[]>(`${ROUTERAPI.registr}${nationalCode}`);
+    registrZaer(barcode: string) {
+        return this.http.get<models.RegisterModel[]>(`${ROUTERAPI.registr}${barcode}`);
     }
 
     deleteZaer(nationalCode: string) {
@@ -64,6 +64,26 @@ export class GlobalService {
 
     teamReport() {
         return this.http.get<models.TeamReportModel[]>(ROUTERAPI.teamReport);
+    }
+
+    getCaravans(): Observable<models.CaravanModel[]> {
+        return of([
+            { id: 1, name: "انصارالمهدی", admin: "آقای یعقوبی" },
+            { id: 2, name: "محبان حضرت فاطمه معصومه (س)", admin: "خانم اصغری" },
+            { id: 3, name: "چهارده معصوم (ع)", admin: "خانم اسکندری ثانی" },
+            { id: 4, name: "حضرت رقیه (س)", admin: "خانم فرزین" },
+            { id: 5, name: "منتظران ظهور", admin: "آقای اسکندری" },
+            { id: 6, name: "منتظران ظهور2", admin: "خانم اسکندری" },
+            { id: 7, name: "قمر بنی هاشم (ع)", admin: "آقای یادگاری" },
+            { id: 8, name: "حضرت فاطمه الزهرا (س)", admin: "خانم عرب قرایی" },
+            { id: 9, name: "ثارالله", admin: "خانم توکلی" },
+            { id: 10, name: "ثاره الله2", admin: "آقای کراتی" },
+            { id: 11, name: "حضرت معصومه (س)", admin: "خانم بذرگر" },
+            { id: 12, name: "امام زین العابدین", admin: "خانم زین العابدین" },
+            { id: 13, name: "پیروان حضرت زهرا (س)", admin: "آقای دهقان پور" },
+            { id: 14, name: "خدام خواهران", admin: "خانم علوی" },
+            { id: 15, name: "خدام برادران", admin: "آقای حسین زاده" },
+        ])
     }
 
 }

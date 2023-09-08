@@ -5,14 +5,17 @@ import { LoginComponent } from './pages/login/login.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { TrafficRegistrationComponent } from './pages/traffic-registration/traffic-registration.component';
 import { ZaerRegistrationComponent } from './pages/zaer-registration/zaer-registration.component';
+import { PrintComponent } from './pages/print/print.component';
 
 
 const routes: Routes = [
   { path: '', redirectTo: 'trafic', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'reports', component: ReportsComponent, canActivate:[AuthGuard] },
-  { path: 'trafic', component: TrafficRegistrationComponent, canActivate:[AuthGuard] },
-  { path: 'zaer', component: ZaerRegistrationComponent, canActivate:[AuthGuard] },
+  { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] },
+  { path: 'trafic', component: TrafficRegistrationComponent, canActivate: [AuthGuard] },
+  { path: 'zaer', component: ZaerRegistrationComponent, canActivate: [AuthGuard] },
+  { path: 'print/:caravanId', component: PrintComponent, canActivate: [AuthGuard] },
+  { path: 'print/:caravanId/:zaerId', component: PrintComponent, canActivate: [AuthGuard] },
 
 ];
 

@@ -10,6 +10,8 @@
           caravan.admin }} ) </option>
       </select>
       <button class="btn btn-primary btn-sm me-2" (click)="getZaerList()">نمایش کاروان</button>
+      <a [href]="'/print/'+ zaer.caravanId" target="_blank"><button class="btn btn-success btn-sm me-2">چاپ
+          کارت</button></a>
     </div>
     <div>
       <div *ngIf="loading" class="spinner-border text-primary"> </div>
@@ -70,6 +72,9 @@
               <button class="btn btn-sm btn-warning" (click)="editZaer(zaeritem)">ویرایش</button>
               <button class="btn btn-sm btn-danger me-1" mwlConfirmationPopover
                 (confirm)="deleteZaer(zaeritem.nationalCode)">حذف</button>
+              <a [href]="'/print/'+ zaer.caravanId + '/' + zaeritem.id" target="_blank"><button
+                  class="btn btn-success btn-sm me-2">چاپ
+                  کارت</button></a>
             </th>
           </tr>
         </tbody>

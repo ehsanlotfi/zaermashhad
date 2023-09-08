@@ -24,11 +24,11 @@ namespace Repository
             _configuration = configuration;
         }
 
-        public List<TrafficOutputDto> TrafficRegistration(string NationalCode)
+        public List<TrafficOutputDto> TrafficRegistration(string Barcode)
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string insertQuery = "INSERT INTO Traffic (NationalCode, Date) Values(@NationalCode, @Date)";
-            int id = connection.Execute(insertQuery, new { NationalCode = NationalCode, Date = DateTime.Now });
+            string insertQuery = "INSERT INTO Traffic (Barcode, Date) Values(@Barcode, @Date)";
+            int id = connection.Execute(insertQuery, new { Barcode = Barcode, Date = DateTime.Now });
 
             string selectQuery = @"SELECT 
                                         Z.Id, 
@@ -36,17 +36,17 @@ namespace Repository
                                         Z.NationalCode, 
                                         Z.Sex, 
                                         Z.CaravanId, 
-                                        COUNT(Traffic.NationalCode) as Total 
-                                        FROM Zaer as Z LEFT JOIN Traffic ON Traffic.NationalCode = Z.NationalCode 
-                                        WHERE Z.NationalCode = @NationalCode GROUP BY Z.Id, Z.Fullname, Z.NationalCode, Z.Sex, Z.CaravanId";
+                                        COUNT(Traffic.Barcode) as Total 
+                                        FROM Zaer as Z LEFT JOIN Traffic ON Traffic.Barcode = Z.Id 
+                                        WHERE Z.Id = @Barcode GROUP BY Z.Id, Z.Fullname, Z.NationalCode, Z.Sex, Z.CaravanId";
 
 
-            List<TrafficOutputDto> trafficInfo = connection.Query<TrafficOutputDto>(selectQuery, new { NationalCode = NationalCode }).ToList();
+            List<TrafficOutputDto> trafficInfo = connection.Query<TrafficOutputDto>(selectQuery, new { Barcode = Barcode }).ToList();
 
             if (trafficInfo.Count() != 0)
             {
-                string selectTrafficQuery = "SELECT Date FROM Traffic WHERE NationalCode = @NationalCode  ORDER BY Date DESC";
-                List<DateList> trafficList = connection.Query<DateList>(selectTrafficQuery, new { NationalCode = NationalCode }).ToList();
+                string selectTrafficQuery = "SELECT Date FROM Traffic WHERE Barcode = @Barcode  ORDER BY Date DESC";
+                List<DateList> trafficList = connection.Query<DateList>(selectTrafficQuery, new { Barcode = Barcode }).ToList();
                 trafficInfo[0].Traffic = trafficList;
             }
 
@@ -57,7 +57,7 @@ namespace Repository
         public List<ZaerModel> ZaerList(int id)
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string selectQuery = $@"SELECT  Fullname, NationalCode, Sex, CaravanId, Image  FROM Zaer WHERE CaravanId = {id} ORDER BY Id DESC";
+            string selectQuery = $@"SELECT  Id, Fullname, NationalCode, Sex, CaravanId, Image  FROM Zaer WHERE CaravanId = {id} ORDER BY Id DESC";
             List<ZaerModel> result = connection.Query<ZaerModel>(selectQuery).ToList();
             return result;
         }
@@ -65,8 +65,8 @@ namespace Repository
         public List<TeamReportDto> TeamReport()
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string selectQuery = @"select Z.CaravanId,Z.Sex, COUNT(T.NationalCode) as TotalTraffic,
-                                    COUNT(distinct(T.NationalCode)) as TotalRegister,
+            string selectQuery = @"select Z.CaravanId,Z.Sex, COUNT(T.Barcode) as TotalTraffic,
+                                    COUNT(distinct(T.Barcode)) as TotalRegister,
 
                                     (select COUNT(cnt) as cnt from (select 1 as cnt from Traffic
                                      where NationalCode in (select NationalCode from Zaer where CaravanId = Z.CaravanId and sex = Z.Sex)
@@ -75,7 +75,7 @@ namespace Repository
 
 
                                     COUNT(DISTINCT Z.Id) TotalZaer FROM Zaer as Z
-                                    LEFT JOIN Traffic as T on T.NationalCode=Z.NationalCode
+                                    LEFT JOIN Traffic as T on T.Barcode=Z.Id
                                     GROUP BY Z.CaravanId,Z.Sex";
 
 
@@ -145,6 +145,7 @@ namespace Repository
 
     public class ZaerModel
     {
+        public int? Id { get; set; }
         public string? Fullname { get; set; }
         public string? NationalCode { get; set; }
         public int? Sex { get; set; }

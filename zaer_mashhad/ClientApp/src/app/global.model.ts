@@ -13,10 +13,12 @@ export interface RegisterModel {
 }
 
 export class ZaerModel {
+  id: number = -1;
   fullname: string = "";
   nationalCode: string = "";
   sex: number = 1;
   caravanId?: number = 1;
+  caravanName?: string = "";
   image?: string = "";
 }
 
@@ -36,5 +38,11 @@ export interface TeamReportModel {
   totalZaer: number,
   totalInside: number,
   totalRegister: number,
+}
+
+export interface CaravanModel {
+  id: number,
+  name: string,
+  admin: string,
 }
 

@@ -11,7 +11,7 @@ import * as models from 'src/app/global.model';
 })
 export class TrafficRegistrationComponent implements OnInit {
 
-  nationalCode: any = null;
+  barcode: any = null;
   loading: boolean = false;
   editMode: boolean = false;
 
@@ -44,11 +44,11 @@ export class TrafficRegistrationComponent implements OnInit {
   }
 
   registrZaer() {
-    if (this.nationalCode.toString().length != 10) return;
+    if (this.barcode.toString().length != 4) return;
     this.loading = true;
 
 
-    this.globalSvc.registrZaer(this.nationalCode).subscribe((data: models.RegisterModel[]) => {
+    this.globalSvc.registrZaer(this.barcode).subscribe((data: models.RegisterModel[]) => {
 
       if (data.length) {
         this.model = JSON.parse(JSON.stringify(data[0]));
@@ -66,7 +66,7 @@ export class TrafficRegistrationComponent implements OnInit {
 
   clear() {
 
-    this.nationalCode = null;
+    this.barcode = null;
     this.loading = false;
     setTimeout(() => {
       this.inputZaerElement.first.nativeElement.focus()

@@ -2,10 +2,10 @@
     <div class="col-lg-6 position-relative">
         <form (keypress.enter)="registrZaer()" (ngSubmit)="registrZaer()">
             <input autocomplete="none" [disabled]="loading" autofocus #inputZaer onlyNumber type="text"
-                class="form-control py-2" (input)="registrZaer()" placeholder="جستجو" [(ngModel)]="nationalCode"
-                name="nationalCode">
+                class="form-control py-2" (input)="registrZaer()" placeholder="جستجو" [(ngModel)]="barcode"
+                name="barcode">
             <button class="btn btn-info f-14 px-4 text-white btn-search"
-                [disabled]="(nationalCode && nationalCode.length != 10) || loading">ثبت
+                [disabled]="(barcode && barcode.length != 4) || loading">ثبت
                 تردد</button>
         </form>
     </div>
@@ -32,9 +32,9 @@
     <div class="col-lg-6 bg-white mb-5 mt-4 p-3 rounded-4">
         <div class="w-100 float-end">
             <h4 class="text-info-custom float-end">
-                <span *ngIf="model.nationalCode "
+                <span *ngIf="model.id "
                     class="alert alert-info float-start py-2 f-14 d-flex align-items-center me-2">شناسه <b
-                        class="me-2">{{model.nationalCode}}</b> </span>
+                        class="me-2">{{model.id}}</b> </span>
                 مشخصات
             </h4>
             <ng-container *ngIf="model.total != null">

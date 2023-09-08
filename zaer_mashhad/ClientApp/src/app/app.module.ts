@@ -16,6 +16,7 @@ import { AuthGuard } from 'src/app/guards/auth.guard';
 import { InterceptorService } from './core/interceptors.service';
 import { ConfirmationPopoverModule } from "angular-confirmation-popover";
 import { ZaerRegistrationComponent } from './pages/zaer-registration/zaer-registration.component';
+import { PrintComponent } from './pages/print/print.component';
 export function initWithDependencyFactory(
   globalSvc: GlobalService
 ) {
@@ -33,6 +34,7 @@ export function initWithDependencyFactory(
 @NgModule({
   declarations: [
     AppComponent,
+    PrintComponent,
     LoginComponent,
     ReportsComponent,
     TrafficRegistrationComponent,
@@ -79,4 +81,5 @@ export function initWithDependencyFactory(
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
 
