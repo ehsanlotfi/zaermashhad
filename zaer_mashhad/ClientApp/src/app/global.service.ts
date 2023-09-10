@@ -42,8 +42,8 @@ export class GlobalService {
         return this.http.get<models.RegisterModel[]>(`${ROUTERAPI.registr}${barcode}`);
     }
 
-    deleteZaer(nationalCode: string) {
-        return this.http.get(`${ROUTERAPI.delete}${nationalCode}`);
+    deleteZaer(id: number) {
+        return this.http.get(`${ROUTERAPI.delete}${id}`);
     }
 
     saveZaer(model: models.ZaerModel) {
@@ -75,7 +75,7 @@ export class GlobalService {
             { id: 5, name: "منتظران ظهور", admin: "آقای اسکندری" },
             { id: 6, name: "منتظران ظهور2", admin: "خانم اسکندری" },
             { id: 7, name: "قمر بنی هاشم (ع)", admin: "آقای یادگاری" },
-            { id: 8, name: "حضرت فاطمه الزهرا (س)", admin: "خانم عرب قرایی" },
+            { id: 8, name: "حضرت فاطمه الزهرا (س)", admin: "خانم عرب خزایی" },
             { id: 9, name: "ثارالله", admin: "خانم توکلی" },
             { id: 10, name: "ثاره الله2", admin: "آقای کراتی" },
             { id: 11, name: "حضرت معصومه (س)", admin: "خانم بذرگر" },

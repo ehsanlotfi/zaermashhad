@@ -14,8 +14,8 @@ const routes: Routes = [
   { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] },
   { path: 'trafic', component: TrafficRegistrationComponent, canActivate: [AuthGuard] },
   { path: 'zaer', component: ZaerRegistrationComponent, canActivate: [AuthGuard] },
-  { path: 'print/:caravanId', component: PrintComponent, canActivate: [AuthGuard] },
-  { path: 'print/:caravanId/:zaerId', component: PrintComponent, canActivate: [AuthGuard] },
+  { path: 'print/:type/:caravanId', component: PrintComponent, canActivate: [AuthGuard] },
+  { path: 'print/:type/:caravanId/:zaerId', component: PrintComponent, canActivate: [AuthGuard] },
 
 ];
 

@@ -23,6 +23,7 @@ export class PrintComponent implements OnInit {
 
   caravanId: number;
   zaerId: number;
+  type: number = 0;
   zaerList: models.ZaerModel[][] = [];
   constructor(
     private readonly route: ActivatedRoute,
@@ -34,13 +35,14 @@ export class PrintComponent implements OnInit {
   ngOnInit(): void {
     this.caravanId = +this.route.snapshot.params["caravanId"];
     this.zaerId = +this.route.snapshot.params["zaerId"];
+    this.type = +this.route.snapshot.params["type"];
     this.getZaerList();
 
   }
 
   getZaerList() {
     this.loading = true;
-
+    const itemPerPage = this.type == 0 ? 8 : 6;
     this.globalSvc.getCaravans().subscribe(caravans => {
       this.globalSvc.zaerList(this.caravanId!).subscribe((list: any[]) => {
 
@@ -48,7 +50,7 @@ export class PrintComponent implements OnInit {
           list = list.filter(f => f.id == this.zaerId);
         }
 
-        const added = (list.length % 8) ? (8 - (list.length % 8)) : 0;
+        const added = (list.length % itemPerPage) ? (itemPerPage - (list.length % itemPerPage)) : 0;
         if (added) {
           new Array(added).fill(0).forEach(f => {
             list.push(new models.ZaerModel());
@@ -59,15 +61,11 @@ export class PrintComponent implements OnInit {
           item.caravanName = caravans.find(f => f.id == item.caravanId)?.name;
         })
 
-        this.zaerList = list.reduce((rows, key, index) => (index % 8 == 0 ? rows.push([key])
+        this.zaerList = list.reduce((rows, key, index) => (index % itemPerPage == 0 ? rows.push([key])
           : rows[rows.length - 1].push(key)) && rows, []);
         this.loading = false;
       })
     })
-
-
-
-
   }
 
 

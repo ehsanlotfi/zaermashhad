@@ -15,23 +15,7 @@ export class ZaerRegistrationComponent implements OnInit {
 
   @ViewChild('nationalCodeDom', { static: true }) nationalCodeDom: ElementRef;
   loading: boolean = false;
-  caravans = [
-    { id: 1, name: "انصارالمهدی", admin: "آقای یعقوبی" },
-    { id: 2, name: "محبان حضرت فاطمه معصومه (س)", admin: "خانم اصغری" },
-    { id: 3, name: "چهارده معصوم (ع)", admin: "خانم اسکندری ثانی" },
-    { id: 4, name: "حضرت رقیه (س)", admin: "خانم فرزین" },
-    { id: 5, name: "منتظران ظهور", admin: "آقای اسکندری" },
-    { id: 6, name: "منتظران ظهور2", admin: "خانم اسکندری" },
-    { id: 7, name: "قمر بنی هاشم (ع)", admin: "آقای یادگاری" },
-    { id: 8, name: "حضرت فاطمه الزهرا (س)", admin: "خانم عرب قرایی" },
-    { id: 9, name: "ثارالله", admin: "خانم توکلی" },
-    { id: 10, name: "ثاره الله2", admin: "آقای کراتی" },
-    { id: 11, name: "حضرت معصومه (س)", admin: "خانم بذرگر" },
-    { id: 12, name: "امام زین العابدین", admin: "خانم زین العابدین" },
-    { id: 13, name: "پیروان حضرت زهرا (س)", admin: "آقای دهقان پور" },
-    { id: 14, name: "خدام خواهران", admin: "خانم علوی" },
-    { id: 15, name: "خدام برادران", admin: "آقای حسین زاده" },
-  ]
+  caravans: models.CaravanModel[] = [];
 
   sexs = [
     { id: 0, name: "خانم" },
@@ -47,7 +31,10 @@ export class ZaerRegistrationComponent implements OnInit {
     private toastr: ToastrService) { }
 
   ngOnInit(): void {
-    this.getZaerList();
+    this.globalSvc.getCaravans().subscribe(caravans => {
+      this.caravans = caravans;
+      this.getZaerList();
+    })
   }
 
   saveZaer() {
@@ -69,9 +56,9 @@ export class ZaerRegistrationComponent implements OnInit {
     this.zaer = zaer;
   }
 
-  deleteZaer(nationalCode: string) {
+  deleteZaer(id: number) {
     this.loading = true;
-    this.globalSvc.deleteZaer(nationalCode).subscribe(list => {
+    this.globalSvc.deleteZaer(id).subscribe(list => {
       this.getZaerList();
     })
   }

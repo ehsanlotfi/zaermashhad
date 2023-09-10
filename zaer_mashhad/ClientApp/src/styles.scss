@@ -151,32 +151,41 @@ body {
   background: rgb(204, 204, 204);
 }
 
+@media print {
+
+  body {
+    margin: 0 I !important;
+    background-color: #fff;
+  }
+
+}
+
 .page {
-  background: white;
-  background: white;
+  background: white !important;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  margin-bottom: 0.5cm;
-  justify-content: space-around;
+  margin-bottom: 0.5cm !important;
 
   >.cart {
     padding: 2mm;
   }
 }
 
+.page2 {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+
 .page[size="A4"] {
-  width: 21cm;
-  height: 29.7cm;
+  width: 210mm;
+  height: 297mm;
   overflow: hidden;
 }
 
 .page[size="A4"][layout="landscape"] {
-  width: 29.7cm;
-  height: 21cm;
+  width: 297mm;
+  height: 210mm;
   overflow: hidden;
 }
-
-@media print {}
 
 body,
 .page {
@@ -212,5 +221,20 @@ body,
       font-size: 0.7rem;
     }
 
+  }
+
+  .page.page2 {
+    .cart {
+      .fullname {
+        bottom: 6.44cm;
+        right: 1.6cm;
+        font-size: 0.8rem;
+      }
+
+      .barcode-font {
+        bottom: 4.2cm;
+        right: 2.5cm;
+      }
+    }
   }
 }

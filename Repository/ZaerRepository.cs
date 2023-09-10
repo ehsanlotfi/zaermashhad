@@ -88,8 +88,8 @@ namespace Repository
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
 
-            string deleteZaer = "DELETE Zaer WHERE NationalCode = @Id";
-            string deleteTraffic = "DELETE Traffic WHERE NationalCode = @Id";
+            string deleteZaer = "DELETE Zaer WHERE Id = @Id";
+            string deleteTraffic = "DELETE Traffic WHERE Barcode = @Id";
 
             try
             {
@@ -115,11 +115,11 @@ namespace Repository
             model.CaravanId = model.CaravanId == null ? 1 : model.CaravanId;
 
             string query = 
-                $@"IF EXISTS (SELECT 1 FROM Zaer WHERE NationalCode = {model.NationalCode})
+                $@"IF EXISTS (SELECT 1 FROM Zaer WHERE Id = {model.Id})
                 BEGIN    
                         UPDATE Zaer
-                        SET Fullname = {model.Fullname}, Sex = {model.Sex}, CaravanId = {model.CaravanId}, [Image] = N'{model.Image}'       
-                        WHERE NationalCode = {model.NationalCode}
+                        SET Fullname = {model.Fullname}, Sex = {model.Sex}, CaravanId = {model.CaravanId}, [Image] = N'{model.Image}', [NationalCode] ={model.NationalCode}      
+                        WHERE Id = {model.Id}
                 END
                   ELSE
                 BEGIN
