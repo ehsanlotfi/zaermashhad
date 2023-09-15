@@ -69,7 +69,7 @@ export class GlobalService {
     getCaravans(): Observable<models.CaravanModel[]> {
         return of([
             { id: 1, name: "انصارالمهدی", admin: "آقای یعقوبی" },
-            { id: 2, name: "محبان حضرت فاطمه معصومه (س)", admin: "خانم اصغری" },
+            { id: 2, name: "محبان حضرت معصومه (س)", admin: "خانم اصغری" },
             { id: 3, name: "چهارده معصوم (ع)", admin: "خانم اسکندری ثانی" },
             { id: 4, name: "حضرت رقیه (س)", admin: "خانم فرزین" },
             { id: 5, name: "منتظران ظهور", admin: "آقای اسکندری" },
@@ -98,7 +98,7 @@ export class CaravanIdiPipe implements PipeTransform {
 
         const caravans = [
             { id: 1, name: "انصارالمهدی", admin: "آقای یعقوبی" },
-            { id: 2, name: "محبان حضرت فاطمه معصومه (س)", admin: "خانم اصغری" },
+            { id: 2, name: "محبان حضرت معصومه (س)", admin: "خانم اصغری" },
             { id: 3, name: "چهارده معصوم (ع)", admin: "خانم اسکندری ثانی" },
             { id: 4, name: "حضرت رقیه (س)", admin: "خانم فرزین" },
             { id: 5, name: "منتظران ظهور", admin: "آقای اسکندری" },
