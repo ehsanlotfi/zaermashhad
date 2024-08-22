@@ -22,6 +22,7 @@ namespace Repository
         public User Login(string username, string password)
         {
             var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            var aaa = BCrypt.Net.BCrypt.HashPassword(password);
             var query = "SELECT * FROM Users WHERE Username = @usr AND IsActive = 1";
             User user =  connection.QueryFirstOrDefault<User>(query, new { usr = username, pwd = password });
             if(user != null)
