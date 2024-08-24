@@ -6,6 +6,7 @@ export const ROUTERAPI = {
     getHash: `${environment.origin}api/auth/gethash/`,
     registr: `${environment.origin}api/zaer/registr/`,
     delete: `${environment.origin}api/zaer/delete/`,
+    compress: `${environment.origin}api/zaer/compress/`,
     saveZaer: `${environment.origin}api/zaer/save-zaer`,
     zaer: `${environment.origin}api/zaer`,
     getAllZaer: `${environment.origin}api/zaer/get-all-zaer`,

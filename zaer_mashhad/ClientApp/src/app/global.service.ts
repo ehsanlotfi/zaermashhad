@@ -8,7 +8,8 @@ import * as models from 'src/app/global.model';
 @Injectable({
     providedIn: "root"
 })
-export class GlobalService {
+export class GlobalService
+{
 
     token: string | null = null;
 
@@ -16,57 +17,75 @@ export class GlobalService {
         private readonly router: Router,
         private readonly http: HttpClient) { }
 
-    getAuthToken(): string {
+    getAuthToken(): string
+    {
         return localStorage.getItem('token') as string;
     }
 
-    checkUser() {
+    checkUser()
+    {
         localStorage.getItem("token");
         this.token = localStorage.getItem("token");
         return this.token ? of(true) : of(false);
     }
 
-    login(username: string, password: string) {
+    login(username: string, password: string)
+    {
         return this.http.post(ROUTERAPI.auth, { username, password });
     }
 
-    logout() {
+    logout()
+    {
         this.token = null;
         localStorage.removeItem("token");
         this.router.navigate(['login']);
     }
 
-
-
-    registrZaer(barcode: string) {
+    registrZaer(barcode: string)
+    {
         return this.http.get<models.RegisterModel[]>(`${ROUTERAPI.registr}${barcode}`);
     }
 
-    deleteZaer(id: number) {
+    deleteZaer(id: number)
+    {
         return this.http.get(`${ROUTERAPI.delete}${id}`);
     }
 
-    saveZaer(model: models.ZaerModel) {
+    compressImgae(imageFile: File)
+    {
+        const formData = new FormData();
+        formData.append('imageFile', imageFile);
+
+        return this.http.post(ROUTERAPI.compress, formData, { responseType: 'text' });
+    }
+
+    saveZaer(model: models.ZaerModel)
+    {
         return this.http.post<string>(ROUTERAPI.saveZaer, model);
     }
 
-    getAllZaer() {
+    getAllZaer()
+    {
         return this.http.get<models.TotalModel[]>(ROUTERAPI.getAllZaer);
     }
 
-    zaerList(caravanId: number) {
+    zaerList(caravanId: number)
+    {
         return this.http.get<models.ZaerModel[]>(`${ROUTERAPI.zaerList}${caravanId}`);
     }
 
-    trafficReport() {
+    trafficReport()
+    {
         return this.http.get<models.TrafficSexModel[]>(ROUTERAPI.trafficReport);
     }
 
-    teamReport() {
+    teamReport()
+    {
         return this.http.get<models.TeamReportModel[]>(ROUTERAPI.teamReport);
     }
 
-    getCaravans(): Observable<models.CaravanModel[]> {
+    getCaravans(): Observable<models.CaravanModel[]>
+    {
         return of([
             { id: 1, name: "انصارالمهدی", admin: "آقای یعقوبی" },
             { id: 2, name: "محبان حضرت معصومه (س)", admin: "خانم اصغری" },
@@ -91,8 +110,10 @@ export class GlobalService {
 @Pipe({
     name: 'caravan'
 })
-export class CaravanIdiPipe implements PipeTransform {
-    transform(caravanId: number, type: 'name' | 'admin'): string {
+export class CaravanIdiPipe implements PipeTransform
+{
+    transform(caravanId: number, type: 'name' | 'admin'): string
+    {
 
         if (!caravanId) return "";
 

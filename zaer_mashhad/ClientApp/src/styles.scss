@@ -196,29 +196,36 @@ body,
   .cart {
 
     .fullname {
-      bottom: 3.8cm;
+      bottom: 4cm;
       right: 0.5cm;
       font-size: 0.6rem;
       font-weight: bold;
     }
 
     .national-code {
-      bottom: 3.7cm;
+      bottom: 4cm;
       right: 4.3cm;
     }
 
     .caravan-name {
-      bottom: 2.6cm;
+      bottom: 2.7cm;
       right: 0.5cm;
       font-size: 0.6rem;
       font-weight: bold;
     }
 
+    .user-image {
+      left: 23px;
+      width: 2cm;
+      height: 2.7cm;
+      top: 28px;
+    }
+
     .barcode-font {
-      bottom: 2.5cm;
-      right: 4.6cm;
+      bottom: 2.6cm;
+      right: 4.2cm;
       font-family: "BARCODEFONT" !important;
-      font-size: 0.7rem;
+      font-size: 1rem;
     }
 
   }
@@ -226,14 +233,16 @@ body,
   .page.page2 {
     .cart {
       .fullname {
-        bottom: 6.44cm;
-        right: 1.6cm;
+        bottom: 5.94cm;
+        right: 2.3cm;
         font-size: 0.8rem;
+        color: #fff;
       }
 
       .barcode-font {
-        bottom: 4.2cm;
-        right: 2.5cm;
+        bottom: 4.5cm;
+        right: 2.6cm;
+        color: #fff;
       }
     }
   }

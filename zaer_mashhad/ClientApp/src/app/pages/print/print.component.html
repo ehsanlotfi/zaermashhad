@@ -2,6 +2,7 @@
   <div class="page" size="A4" layout="landscape" *ngFor="let page of zaerList">
     <div *ngFor="let item of page" class="cart position-relative">
       <ng-container *ngIf="item.id && item.id != -1">
+        <img class="user-image position-absolute" src="{{ item.image || 'assets/img/no-img.jpg' }}">
         <span class="fullname position-absolute">{{ item?.fullname }}</span>
         <span class="national-code position-absolute">{{ item?.nationalCode }}</span>
         <span class="caravan-name position-absolute">{{ item?.caravanName }}</span>

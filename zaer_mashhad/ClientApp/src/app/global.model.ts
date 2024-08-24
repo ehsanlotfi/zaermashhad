@@ -1,18 +1,22 @@
-export interface DateModel {
+export interface DateModel
+{
   date: string;
 }
 
-export interface RegisterModel {
+export interface RegisterModel
+{
   id?: number;
   fullname: string;
   nationalCode: string;
   sex?: number;
+  image?: string;
   caravanId: number;
   total: any;
   traffic: DateModel[];
 }
 
-export class ZaerModel {
+export class ZaerModel
+{
   id: number = -1;
   fullname: string = "";
   nationalCode: string = "";
@@ -22,16 +26,19 @@ export class ZaerModel {
   image?: string = "";
 }
 
-export interface TotalModel {
+export interface TotalModel
+{
   total: number;
 }
 
-export interface TrafficSexModel {
+export interface TrafficSexModel
+{
   sex: number;
   total: number;
 }
 
-export interface TeamReportModel {
+export interface TeamReportModel
+{
   caravanId: number,
   sex: number,
   totalTraffic: number,
@@ -40,7 +47,8 @@ export interface TeamReportModel {
   totalRegister: number,
 }
 
-export interface CaravanModel {
+export interface CaravanModel
+{
   id: number,
   name: string,
   admin: string,

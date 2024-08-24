@@ -35,10 +35,11 @@ namespace Repository
                                         Z.Fullname, 
                                         Z.NationalCode, 
                                         Z.Sex, 
+                                        Z.Image, 
                                         Z.CaravanId, 
                                         COUNT(Traffic.Barcode) as Total 
                                         FROM Zaer as Z LEFT JOIN Traffic ON Traffic.Barcode = Z.Id 
-                                        WHERE Z.Id = @Barcode GROUP BY Z.Id, Z.Fullname, Z.NationalCode, Z.Sex, Z.CaravanId";
+                                        WHERE Z.Id = @Barcode GROUP BY Z.Id, Z.Fullname, Z.NationalCode, Z.Sex, Z.Image, Z.CaravanId";
 
 
             List<TrafficOutputDto> trafficInfo = connection.Query<TrafficOutputDto>(selectQuery, new { Barcode = Barcode }).ToList();
@@ -165,6 +166,7 @@ namespace Repository
         public string? Fullname { get; set; }
         public string? NationalCode { get; set; }
         public Int16 Sex { get; set; }
+        public string? Image { get; set; }
         public int? CaravanId { get; set; }
         public int Total { get; set; }
         public List<DateList>? Traffic { get; set; }

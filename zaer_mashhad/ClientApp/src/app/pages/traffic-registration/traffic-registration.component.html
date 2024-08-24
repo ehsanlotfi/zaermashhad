@@ -52,31 +52,36 @@
             </ng-container>
 
         </div>
-        <div class="w-100 float-end">
+        <div class="w-100 float-end row">
+            <div class="col-4 d-flex align-items-center">
+                <img src="{{ model.image || 'assets/img/no-img.jpg' }}" class="w-100 img-thumbnail">
+            </div>
+            <div class="col-8 d-flex align-items-center">
+                <ul class="w-100 list-group list-group-flush px-0">
+                    <li class="list-group-item py-3">
+                        <span>نام:</span>
+                        <span class="float-start">{{ model.fullname }}</span>
+                    </li>
+                    <li class="list-group-item py-3">
+                        <span>جنسیت:</span>
+                        <span class="float-start" *ngIf="model.sex == 0">خانم</span>
+                        <span class="float-start" *ngIf="model.sex == 1">آقا</span>
+                    </li>
+                    <li class="list-group-item py-3">
+                        <span>کدملی:</span>
+                        <span class="float-start">{{ model.nationalCode }}</span>
+                    </li>
+                    <li class="list-group-item py-3">
+                        <span>نام کاروان:</span>
+                        <span class="float-start">{{ model.caravanId | caravan : 'name'}}</span>
+                    </li>
+                    <li class="list-group-item py-3">
+                        <span>مسئول کاروان:</span>
+                        <span class="float-start">{{ model.caravanId | caravan : 'admin'}}</span>
+                    </li>
+                </ul>
+            </div>
 
-            <ul class="list-group list-group-flush px-0">
-                <li class="list-group-item py-3">
-                    <span>نام:</span>
-                    <span class="float-start">{{ model.fullname }}</span>
-                </li>
-                <li class="list-group-item py-3">
-                    <span>جنسیت:</span>
-                    <span class="float-start" *ngIf="model.sex == 0">خانم</span>
-                    <span class="float-start" *ngIf="model.sex == 1">آقا</span>
-                </li>
-                <li class="list-group-item py-3">
-                    <span>کدملی:</span>
-                    <span class="float-start">{{ model.nationalCode }}</span>
-                </li>
-                <li class="list-group-item py-3">
-                    <span>نام کاروان:</span>
-                    <span class="float-start">{{ model.caravanId | caravan : 'name'}}</span>
-                </li>
-                <li class="list-group-item py-3">
-                    <span>مسئول کاروان:</span>
-                    <span class="float-start">{{ model.caravanId | caravan : 'admin'}}</span>
-                </li>
-            </ul>
         </div>
     </div>
     <div class="col-lg-6">

@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Repository;
-using zaerine_piyade.Filters;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using System.IO;
 
 namespace zaerine_piyade.Controllers
 {
@@ -48,5 +53,37 @@ namespace zaerine_piyade.Controllers
         {
             return _zaer.ZaerList(CaravanId);
         }
+
+        [HttpPost("compress")]
+        public async Task<IActionResult> CompressImage(IFormFile imageFile)
+        {
+            if (imageFile == null || imageFile.Length == 0)
+                return BadRequest("Please upload a valid image file.");
+
+            using var image = await Image.LoadAsync(imageFile.OpenReadStream());
+            int Quality = 75;
+            // فشرده‌سازی تصویر با کیفیت مورد نظر
+            var encoder = new JpegEncoder { Quality = Quality };
+            using var ms = new MemoryStream();
+            await image.SaveAsync(ms, encoder);
+
+            // اگر حجم بیشتر از 100 کیلوبایت بود، کیفیت را کم‌تر کنید
+            while (ms.Length > 100 * 1024)
+            {
+                ms.SetLength(0);
+                Quality -= 5;
+                encoder = new JpegEncoder { Quality = Quality };
+                await image.SaveAsync(ms, encoder);
+
+                if (encoder.Quality <= 5)
+                    break; // جلوگیری از کیفیت بیش از حد پایین
+            }
+
+            // تبدیل تصویر به Base64
+            string base64Image = Convert.ToBase64String(ms.ToArray());
+
+            return Ok("data:image/jpeg;base64,"+base64Image);
+        }
+
     }
 }
