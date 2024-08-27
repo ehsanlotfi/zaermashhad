@@ -232,6 +232,19 @@ body,
 
   .page.page2 {
     .cart {
+      .user-image {
+        right: 49px;
+        width: 1.2cm;
+        height: 1.5cm;
+        top: 32px;
+      }
+
+      .national-code {
+        bottom: 5cm;
+        right: 2.7cm;
+        color: #fff;
+      }
+
       .fullname {
         bottom: 5.94cm;
         right: 2.3cm;
@@ -240,9 +253,10 @@ body,
       }
 
       .barcode-font {
-        bottom: 4.5cm;
-        right: 2.6cm;
+        bottom: 4.3cm;
+        right: 2.9cm;
         color: #fff;
+        font-size: 12px;
       }
     }
   }
