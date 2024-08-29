@@ -11,7 +11,8 @@ import { saveAs } from 'file-saver';
   templateUrl: './print.component.html',
   styleUrls: ['./print.component.css']
 })
-export class PrintComponent implements OnInit {
+export class PrintComponent implements OnInit
+{
 
   @ViewChild('nationalCodeDom', { static: true }) nationalCodeDom: ElementRef;
   loading: boolean = false;
@@ -32,7 +33,8 @@ export class PrintComponent implements OnInit {
     private renderer: Renderer2,
     private toastr: ToastrService) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void
+  {
     this.caravanId = +this.route.snapshot.params["caravanId"];
     this.zaerId = +this.route.snapshot.params["zaerId"];
     this.type = +this.route.snapshot.params["type"];
@@ -40,24 +42,31 @@ export class PrintComponent implements OnInit {
 
   }
 
-  getZaerList() {
+  getZaerList()
+  {
     this.loading = true;
-    const itemPerPage = this.type == 0 ? 8 : 6;
-    this.globalSvc.getCaravans().subscribe(caravans => {
-      this.globalSvc.zaerList(this.caravanId!).subscribe((list: any[]) => {
+    const itemPerPage = this.type == 0 ? 8 : 8;
+    this.globalSvc.getCaravans().subscribe(caravans =>
+    {
+      this.globalSvc.zaerList(this.caravanId!).subscribe((list: any[]) =>
+      {
 
-        if (this.zaerId && this.zaerId! - 1) {
+        if (this.zaerId && this.zaerId! - 1)
+        {
           list = list.filter(f => f.id == this.zaerId);
         }
 
         const added = (list.length % itemPerPage) ? (itemPerPage - (list.length % itemPerPage)) : 0;
-        if (added) {
-          new Array(added).fill(0).forEach(f => {
+        if (added)
+        {
+          new Array(added).fill(0).forEach(f =>
+          {
             list.push(new models.ZaerModel());
           });
         }
 
-        list.forEach(item => {
+        list.forEach(item =>
+        {
           item.caravanName = caravans.find(f => f.id == item.caravanId)?.name;
         })
 
@@ -67,6 +76,5 @@ export class PrintComponent implements OnInit {
       })
     })
   }
-
 
 }
