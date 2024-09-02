@@ -1,10 +1,13 @@
+USE [zaermas1_db]
+GO
+/****** Object:  Table [dbo].[Traffic]    Script Date: 12/06/1403 08:52:45 ق.ظ ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Traffic](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Barcode] [nvarchar](50) NOT NULL,
+	[Barcode] [int] NOT NULL,
 	[Date] [datetime] NULL,
  CONSTRAINT [PK_Traffic] PRIMARY KEY CLUSTERED 
 (
@@ -12,7 +15,7 @@ CREATE TABLE [dbo].[Traffic](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 8/24/2024 3:43:04 PM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 12/06/1403 08:52:45 ق.ظ ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -29,7 +32,7 @@ CREATE TABLE [dbo].[Users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Zaer]    Script Date: 8/24/2024 3:43:04 PM ******/
+/****** Object:  Table [dbo].[Zaer]    Script Date: 12/06/1403 08:52:45 ق.ظ ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

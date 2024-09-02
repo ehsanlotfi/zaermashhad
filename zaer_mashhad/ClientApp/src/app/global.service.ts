@@ -103,7 +103,8 @@ export class GlobalService
             { id: 14, name: "خدام خواهران", admin: "خانم علوی" },
             { id: 15, name: "خدام برادران", admin: "آقای حسین زاده" },
             { id: 16, name: "حضرت زینب (س)", admin: "زهرا آذری" },
-            { id: 17, name: "خادمین", admin: "هئیت" }
+            { id: 17, name: "خادمین", admin: "هئیت" },
+            { id: 18, name: "حضرت امیرالمومنین (ع)", admin: "آقای کوه‌کن" }
         ])
     }
 
@@ -136,7 +137,8 @@ export class CaravanIdiPipe implements PipeTransform
             { id: 14, name: "خدام خواهران", admin: "خانم علوی" },
             { id: 15, name: "خدام برادران", admin: "آقای حسین زاده" },
             { id: 16, name: "حضرت زینب (س)", admin: "زهرا آذری" },
-            { id: 17, name: "خادمین", admin: "هئیت" }
+            { id: 17, name: "خادمین", admin: "هئیت" },
+            { id: 18, name: "حضرت امیرالمومنین (ع)", admin: "آقای کوه‌کن" }
         ]
 
         return caravans.find(f => f.id == caravanId)![type].toString();
