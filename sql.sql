@@ -50,3 +50,4 @@ INSERT INTO [dbo].[Users]
 VALUES 
     ('admin', '$2a$11$pCF4869ehPyko7Az8s/l6eumvN3LfcLni50Nwc7IGzwUTA3y6nlLu', 'admin', 1)
 GO
+-- Aa123456
