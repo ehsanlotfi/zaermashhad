@@ -18,7 +18,6 @@
     <div *ngFor="let item of page" class="cart position-relative">
       <ng-container *ngIf="item.id && item.id != -1">
         <img class="user-image position-absolute" src="{{ item.image || 'assets/img/no-img.jpg' }}">
-        <span class="national-code position-absolute">{{ item?.nationalCode }}</span>
         <span class="fullname position-absolute">{{ item?.fullname }}</span>
         <span class="barcode-font position-absolute">*{{ item?.id }}*</span>
       </ng-container>

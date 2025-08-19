@@ -17,11 +17,12 @@ namespace zaerine_piyade.Controllers
 
         private readonly ILogger<ZaerController> _logger;
         private readonly IZaerRepository _zaer;
-
-        public ZaerController(ILogger<ZaerController> logger, IZaerRepository zaer)
+        private readonly IWebHostEnvironment _env;
+        public ZaerController(ILogger<ZaerController> logger, IZaerRepository zaer, IWebHostEnvironment env)
         {
             _logger = logger;
             _zaer = zaer;
+            _env = env;
         }
 
         [HttpGet("registr/{ZaerId}")]
@@ -46,6 +47,46 @@ namespace zaerine_piyade.Controllers
         public ActionResult<int> SaveZaer(ZaerModel model)
         {
             return _zaer.SaveZaer(model);
+        }
+
+        [HttpPost("upload/{zaerId}")]
+        public async Task<IActionResult> UploadZaerImage(int zaerId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("فایلی ارسال نشده است");
+
+            // مسیر ذخیره سازی: wwwroot/zaers/{id}/user.jpg
+            var zaerFolder = Path.Combine(_env.WebRootPath, "zaers", zaerId.ToString());
+
+            if (!Directory.Exists(zaerFolder))
+                Directory.CreateDirectory(zaerFolder);
+
+            var filePath = Path.Combine(zaerFolder, "user.jpg");
+
+            // اگر فایل موجود بود پاک شود
+            if (System.IO.File.Exists(filePath))
+                System.IO.File.Delete(filePath);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok(new { message = "فایل با موفقیت ذخیره شد" });
+        }
+
+        [HttpDelete("delete/{zaerId}")]
+        public IActionResult DeleteZaerImage(int zaerId)
+        {
+            var filePath = Path.Combine(_env.WebRootPath, "zaers", zaerId.ToString(), "user.jpg");
+
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+                return Ok(new { message = "فایل حذف شد" });
+            }
+
+            return NotFound(new { message = "فایلی برای حذف یافت نشد" });
         }
 
         [HttpGet("zaer-list/{CaravanId}")]

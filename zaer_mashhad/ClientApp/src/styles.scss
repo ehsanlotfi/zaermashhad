@@ -41,7 +41,7 @@ input::-webkit-inner-spin-button {
   /* <-- Apparently some margin are still there even though it's hidden */
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
   /* Firefox */
 }
@@ -152,12 +152,10 @@ body {
 }
 
 @media print {
-
   body {
     margin: 0 I !important;
     background-color: #fff;
   }
-
 }
 
 .page {
@@ -166,7 +164,7 @@ body {
   grid-template-columns: repeat(4, 1fr);
   margin-bottom: 0.5cm !important;
 
-  >.cart {
+  > .cart {
     padding: 2mm;
   }
 }
@@ -194,69 +192,70 @@ body,
   box-shadow: 0;
 
   .cart {
-
     .fullname {
-      bottom: 4cm;
+      bottom: 3cm;
       right: 0.5cm;
-      font-size: 0.6rem;
-      font-weight: bold;
+      font-size: 0.8rem;
+      font-weight: 700;
     }
 
     .national-code {
-      bottom: 4cm;
+      bottom: 2.9cm;
       right: 4.3cm;
     }
 
     .caravan-name {
-      bottom: 2.7cm;
+      bottom: 1.7cm;
       right: 0.5cm;
       font-size: 0.6rem;
-      font-weight: bold;
+      font-weight: 700;
     }
 
     .user-image {
       left: 23px;
-      width: 2cm;
-      height: 2.7cm;
-      top: 28px;
+      width: 2.3cm;
+      height: 3.1cm;
+      top: 36px;
     }
 
     .barcode-font {
-      bottom: 2.6cm;
-      right: 4.2cm;
-      font-family: "BARCODEFONT" !important;
-      font-size: 1rem;
+      bottom: 1.6cm;
+      right: 3.7cm;
+      font-family: BARCODEFONT !important;
+      font-size: 0.9rem;
+      letter-spacing: 6px;
     }
-
   }
 
   .page.page2 {
     .cart {
       .user-image {
-        right: 49px;
-        width: 1.2cm;
-        height: 1.5cm;
-        top: 32px;
+        left: 33px;
+        width: 2.1cm;
+        height: 2.8cm;
+        top: 28px;
       }
 
       .national-code {
-        bottom: 2.5cm;
-        right: 2.7cm;
-        color: #fff;
+        bottom: 2.9cm;
+        right: 3.1cm;
+        color: #777;
+        font-size: 10px;
       }
 
       .fullname {
-        bottom: 3.5cm;
-        right: 2.3cm;
+        bottom: 3.1cm;
+        right: 2.2cm;
         font-size: 0.8rem;
-        color: #fff;
+        color: #000;
       }
 
       .barcode-font {
-        bottom: 1.84cm;
-        right: 3.4cm;
-        color: #fff;
-        font-size: 6px;
+        bottom: 1.94cm;
+        right: 2.7cm;
+        color: #000;
+        font-size: 11px;
+        letter-spacing: 4px;
       }
     }
   }

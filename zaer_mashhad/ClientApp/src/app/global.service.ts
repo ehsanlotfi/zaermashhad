@@ -59,6 +59,14 @@ export class GlobalService {
     return this.http.post<string>(ROUTERAPI.saveZaer, model);
   }
 
+  uploadZaerImage(zaerId: number, formData: FormData): Observable<any> {
+    return this.http.post(ROUTERAPI.upload + zaerId, formData);
+  }
+
+  deleteZaerImage(zaerId: number): Observable<any> {
+    return this.http.delete(ROUTERAPI.saveZaer);
+  }
+
   getAllZaer() {
     return this.http.get<models.TotalModel[]>(ROUTERAPI.getAllZaer);
   }
@@ -96,9 +104,9 @@ export class GlobalService {
       { id: 15, name: 'خدام برادران', admin: 'آقای حسین زاده' },
       { id: 16, name: 'حضرت زینب (س)', admin: 'زهرا آذری' },
       { id: 17, name: 'خادمین', admin: 'هئیت' },
-      { id: 18, name: 'حضرت امیرالمومنین (ع)', admin: 'آقای کوه‌کن' },
+      { id: 18, name: 'متوسلین حضرت رقیه', admin: 'خانم شهربانو بهلولی' },
       { id: 19, name: 'عاشقان ثارالله', admin: 'حسن آذریان' },
-      { id: 20, name: 'حضرت علی اکبر علیه السلام', admin: 'حسین علیمیرزایی' }
+      { id: 20, name: 'حضرت علی اکبر علیه السلام', admin: 'حسین علیمیرزایی' },
     ]);
   }
 }
