@@ -125,7 +125,7 @@ export class CaravanIdiPipe implements PipeTransform {
       { id: 4, name: 'حضرت رقیه (س)', admin: 'خانم فرزین' },
       { id: 5, name: 'منتظران ظهور', admin: 'آقای اسکندری' },
       { id: 6, name: 'منتظران ظهور', admin: 'خانم اسکندری' },
-      { id: 7, name: 'قمر بنی هاشم (ع)', admin: 'آقای یادگاری' },
+      // { id: 7, name: 'قمر بنی هاشم (ع)', admin: 'آقای یادگاری' },
       { id: 8, name: 'حضرت فاطمه الزهرا (س)', admin: 'خانم عرب قرایی' },
       { id: 9, name: 'ثارالله', admin: 'خانم توکلی' },
       { id: 10, name: 'ثاره الله', admin: 'آقای کراتی' },
@@ -136,7 +136,9 @@ export class CaravanIdiPipe implements PipeTransform {
       { id: 15, name: 'خدام برادران', admin: 'آقای حسین زاده' },
       { id: 16, name: 'حضرت زینب (س)', admin: 'زهرا آذری' },
       { id: 17, name: 'خادمین', admin: 'هئیت' },
-      { id: 18, name: 'حضرت امیرالمومنین (ع)', admin: 'آقای کوه‌کن' },
+      { id: 18, name: 'متوسلین حضرت رقیه', admin: 'خانم شهربانو بهلولی' },
+      { id: 19, name: 'عاشقان ثارالله', admin: 'حسن آذریان' },
+      { id: 20, name: 'حضرت علی اکبر علیه السلام', admin: 'حسین علیمیرزایی' }
     ];
 
     return caravans.find((f) => f.id == caravanId)![type].toString();

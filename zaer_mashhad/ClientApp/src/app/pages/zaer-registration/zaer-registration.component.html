@@ -67,7 +67,7 @@
         <tbody>
           <tr *ngFor="let zaeritem of zaerList">
             <td class="text-center">
-              <img src="{{ zaeritem.image || 'assets/img/no-img.jpg' }}" class="zaer-image-in-list">
+              <img src="{{ zaeritem.image || 'assets/img/no-img.jpg' }}" class="zaer-image-in-list" loading="lazy">
             </td>
             <td>{{ zaeritem.nationalCode }}</td>
             <td>{{ zaeritem.fullname }}</td>
