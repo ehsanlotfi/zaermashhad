@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Repository;
 using SixLabors.ImageSharp.Formats.Jpeg;
-using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
-using System.IO;
 
 namespace zaerine_piyade.Controllers
 {
@@ -26,9 +22,11 @@ namespace zaerine_piyade.Controllers
         }
 
         [HttpGet("registr/{ZaerId}")]
-        public ActionResult<List<TrafficOutputDto>> Registr(string ZaerId)
+        public ActionResult<List<TrafficOutputDto>> Registr(
+            string ZaerId,
+            bool registerTraffic = true)
         {
-            return _zaer.TrafficRegistration(ZaerId);
+            return _zaer.TrafficRegistration(ZaerId, registerTraffic);
         }
 
         [HttpGet("delete/{ZaerId}")]
@@ -55,44 +53,102 @@ namespace zaerine_piyade.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("فایلی ارسال نشده است");
 
-            // مسیر ذخیره سازی: wwwroot/zaers/{id}/user.jpg
-            var zaerFolder = Path.Combine(_env.WebRootPath, "zaers", zaerId.ToString());
 
-            if (!Directory.Exists(zaerFolder))
-                Directory.CreateDirectory(zaerFolder);
+            var uploadPath = Path.Combine(
+                _env.WebRootPath,
+                "uploads");
 
-            var filePath = Path.Combine(zaerFolder, "user.jpg");
 
-            // اگر فایل موجود بود پاک شود
-            if (System.IO.File.Exists(filePath))
-                System.IO.File.Delete(filePath);
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+
+            var filePath = Path.Combine(
+                uploadPath,
+                $"{zaerId}.png");
+
+
+            using var stream = new FileStream(
+                filePath,
+                FileMode.Create);
+
+
+            await file.CopyToAsync(stream);
+
+
+            return Ok(new
             {
-                await file.CopyToAsync(stream);
-            }
-
-            return Ok(new { message = "فایل با موفقیت ذخیره شد" });
+                message = "فایل ذخیره شد",
+                image = $"/uploads/{zaerId}.png"
+            });
         }
 
-        [HttpDelete("delete/{zaerId}")]
+        [HttpDelete("delete-image/{zaerId}")]
         public IActionResult DeleteZaerImage(int zaerId)
         {
-            var filePath = Path.Combine(_env.WebRootPath, "zaers", zaerId.ToString(), "user.jpg");
+            var filePath = Path.Combine(
+                _env.WebRootPath,
+                "uploads",
+                $"{zaerId}.png");
+
 
             if (System.IO.File.Exists(filePath))
             {
                 System.IO.File.Delete(filePath);
-                return Ok(new { message = "فایل حذف شد" });
+
+                return Ok(new
+                {
+                    message = "فایل حذف شد"
+                });
             }
 
-            return NotFound(new { message = "فایلی برای حذف یافت نشد" });
+
+            return NotFound(new
+            {
+                message = "فایلی وجود ندارد"
+            });
         }
 
         [HttpGet("zaer-list/{CaravanId}")]
-        public ActionResult<List<ZaerModel>> ZaerList(int CaravanId)
+        public IActionResult ZaerList(int CaravanId, bool excel = false)
         {
-            return _zaer.ZaerList(CaravanId);
+            var result = _zaer.ZaerList(CaravanId, excel);
+
+            if (excel)
+            {
+                return File(
+                    (byte[])result,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "zaer-list.xlsx");
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("caravan-list")]
+        public ActionResult<List<CaravanModel>> List()
+        {
+            return _zaer.CaravanList();
+        }
+
+
+
+
+        [HttpPost("caravan-save")]
+        public ActionResult<int> Save(
+            CaravanModel model)
+        {
+            return _zaer.SaveCaravan(model);
+        }
+
+
+
+
+        [HttpDelete("caravan-delete/{id}")]
+        public ActionResult<int> Delete(
+            int id)
+        {
+            return _zaer.DeleteCaravan(id);
         }
 
         [HttpPost("compress")]
@@ -123,7 +179,7 @@ namespace zaerine_piyade.Controllers
             // تبدیل تصویر به Base64
             string base64Image = Convert.ToBase64String(ms.ToArray());
 
-            return Ok("data:image/jpeg;base64,"+base64Image);
+            return Ok("data:image/jpeg;base64," + base64Image);
         }
 
     }

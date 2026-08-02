@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Repository;
 using System.Text;
+using System.Xml.Linq;
 
 namespace zaerine_piyade
 {
@@ -21,7 +22,8 @@ namespace zaerine_piyade
             {
                 options.AddPolicy(
                   name: CORSOpenPolicy,
-                  builder => {
+                  builder =>
+                  {
                       builder
                       .WithOrigins("*")
                       .AllowAnyHeader()
@@ -45,6 +47,11 @@ namespace zaerine_piyade
 
             builder.Services.AddTransient<IZaerRepository, ZaerRepository>();
             builder.Services.AddTransient<IUserRepository, UserRepository>();
+
+            builder.Services.AddSingleton(new UploadOptions
+            {
+                UploadPath = Path.Combine(builder.Environment.WebRootPath, "uploads")
+            });
 
             var app = builder.Build();
 

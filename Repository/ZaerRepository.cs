@@ -1,148 +1,523 @@
-﻿
-
-using Dapper;
+﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
+using OfficeOpenXml;
 
 namespace Repository
 {
     public interface IZaerRepository
     {
-        List<TrafficOutputDto> TrafficRegistration(string NationalCode);
+        List<TrafficOutputDto> TrafficRegistration(string Barcode, bool registerTraffic);
         List<TeamReportDto> TeamReport();
-        List<ZaerModel> ZaerList(int id);
+        object ZaerList(int id, bool excel = false);
         int SaveZaer(ZaerModel model);
         int deleteZaer(string Id);
+
+        List<CaravanModel> CaravanList();
+        int SaveCaravan(CaravanModel model);
+        int DeleteCaravan(int id);
     }
 
     public class ZaerRepository : IZaerRepository
     {
         private readonly IConfiguration _configuration;
-
-        public ZaerRepository(IConfiguration configuration)
+        private readonly UploadOptions _options;
+        public ZaerRepository(IConfiguration configuration, UploadOptions options)
         {
             _configuration = configuration;
+            _options = options;
         }
 
-        public List<TrafficOutputDto> TrafficRegistration(string Barcode)
+        public List<TrafficOutputDto> TrafficRegistration(string Barcode, bool registerTraffic = true)
         {
-            var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string insertQuery = "INSERT INTO Traffic (Barcode, Date) Values(@Barcode, @Date)";
-            int id = connection.Execute(insertQuery, new { Barcode = Barcode, Date = DateTime.Now });
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
 
-            string selectQuery = @"SELECT 
-                                        Z.Id, 
-                                        Z.Fullname, 
-                                        Z.NationalCode, 
-                                        Z.Sex, 
-                                        Z.Image, 
-                                        Z.CaravanId, 
-                                        COUNT(Traffic.Barcode) as Total 
-                                        FROM Zaer as Z LEFT JOIN Traffic ON Traffic.Barcode = Z.Id 
-                                        WHERE Z.Id = @Barcode GROUP BY Z.Id, Z.Fullname, Z.NationalCode, Z.Sex, Z.Image, Z.CaravanId";
+            connection.Open();
 
 
-            List<TrafficOutputDto> trafficInfo = connection.Query<TrafficOutputDto>(selectQuery, new { Barcode = Barcode }).ToList();
+            // بررسی وجود زائر
+            var zaerExists = connection.ExecuteScalar<int>(
+                "SELECT COUNT(1) FROM Zaer WHERE Id = @Barcode",
+                new { Barcode });
 
-            if (trafficInfo.Count() != 0)
+
+            if (zaerExists == 0)
             {
-                string selectTrafficQuery = "SELECT Date FROM Traffic WHERE Barcode = @Barcode  ORDER BY Date DESC";
-                List<DateList> trafficList = connection.Query<DateList>(selectTrafficQuery, new { Barcode = Barcode }).ToList();
-                trafficInfo[0].Traffic = trafficList;
+                return new List<TrafficOutputDto>();
+            }
+
+
+            // ثبت تردد فقط در صورت فعال بودن
+            if (registerTraffic)
+            {
+                connection.Execute(
+                    @"INSERT INTO Traffic (Barcode, Date)
+              VALUES (@Barcode, @Date)",
+                    new
+                    {
+                        Barcode,
+                        Date = DateTime.Now
+                    });
+            }
+
+
+            var trafficInfo = connection.Query<TrafficOutputDto>(
+                @"SELECT
+                Z.Id,
+                Z.Fullname,
+                Z.NationalCode,
+                Z.Sex,
+                Z.CaravanId,
+                COUNT(T.Id) AS Total
+            FROM Zaer Z
+            LEFT JOIN Traffic T
+                ON T.Barcode = Z.Id
+            WHERE Z.Id = @Barcode
+            GROUP BY
+                Z.Id,
+                Z.Fullname,
+                Z.NationalCode,
+                Z.Sex,
+                Z.CaravanId",
+                new { Barcode })
+                .ToList();
+
+
+            if (trafficInfo.Count > 0)
+            {
+                string imagePath = Path.Combine(
+                    _options.UploadPath,
+                    $"{Barcode}.png");
+
+
+                if (File.Exists(imagePath))
+                {
+                    trafficInfo[0].Image = $"/uploads/{Barcode}.png";
+                }
+
+
+                trafficInfo[0].Traffic = connection.Query<DateList>(
+                    @"SELECT Date
+              FROM Traffic
+              WHERE Barcode = @Barcode
+              ORDER BY Date DESC",
+                    new { Barcode })
+                    .ToList();
             }
 
 
             return trafficInfo;
         }
 
-        public List<ZaerModel> ZaerList(int id)
+        public object ZaerList(int id, bool excel = false)
         {
-            var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string selectQuery = $@"SELECT  Id, Fullname, NationalCode, Sex, CaravanId, Image  FROM Zaer WHERE CaravanId = {id} ORDER BY Id DESC";
-            List<ZaerModel> result = connection.Query<ZaerModel>(selectQuery).ToList();
-            return result;
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
+
+
+            var result = connection.Query<ZaerModel>(
+                @"SELECT 
+                        Id,
+                        Fullname,
+                        NationalCode,
+                        Sex,
+                        CaravanId
+                    FROM Zaer
+                    WHERE CaravanId = @Id
+                    ORDER BY Id DESC",
+                new { Id = id })
+                .ToList();
+
+
+            foreach (var item in result)
+            {
+                string imagePath = Path.Combine(
+                    _options.UploadPath,
+                    $"{item.Id}.png");
+
+
+                if (File.Exists(imagePath))
+                {
+                    item.Image = $"/uploads/{item.Id}.png";
+                }
+            }
+
+
+            if (!excel)
+                return result;
+
+
+            using var package = new OfficeOpenXml.ExcelPackage();
+
+            var sheet = package.Workbook.Worksheets.Add("Zaer");
+
+
+            sheet.Cells[1, 1].Value = "کد";
+            sheet.Cells[1, 2].Value = "نام";
+            sheet.Cells[1, 3].Value = "کد ملی";
+            sheet.Cells[1, 4].Value = "جنسیت";
+            sheet.Cells[1, 5].Value = "تصویر";
+
+
+            int row = 2;
+
+
+            foreach (var item in result)
+            {
+                sheet.Cells[row, 1].Value = item.Id;
+                sheet.Cells[row, 2].Value = item.Fullname;
+                sheet.Cells[row, 3].Value = item.NationalCode;
+                sheet.Cells[row, 4].Value = item.Sex == 1 ? "مرد" : "زن";
+
+
+                string file = Path.Combine(
+                    _options.UploadPath,
+                    $"{item.Id}.png");
+
+
+                if (File.Exists(file))
+                {
+                    var picture = sheet.Drawings.AddPicture(
+                        $"image_{item.Id}",
+                        new FileInfo(file));
+
+                    picture.SetPosition(row - 1, 5, 0, 0);
+                    picture.SetSize(80, 80);
+
+                    sheet.Row(row).Height = 65;
+                }
+
+
+                row++;
+            }
+
+
+            sheet.Cells.AutoFitColumns();
+
+
+            return package.GetAsByteArray();
         }
-        
+
         public List<TeamReportDto> TeamReport()
         {
-            var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            string selectQuery = @"select Z.CaravanId,Z.Sex, COUNT(T.Barcode) as TotalTraffic,
-                                    COUNT(distinct(T.Barcode)) as TotalRegister,
-
-                                    (select COUNT(cnt) as cnt from (select 1 as cnt from Traffic
-                                     where Barcode in (select Id from Zaer where CaravanId = Z.CaravanId and sex = Z.Sex)
-                                     group by Barcode
-                                     HAVING  COUNT(Traffic.Id) % 2 = 1) as tb1) as TotalInside,
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
 
 
-                                    COUNT(DISTINCT Z.Id) TotalZaer FROM Zaer as Z
-                                    LEFT JOIN Traffic as T on T.Barcode=Z.Id
-                                    GROUP BY Z.CaravanId,Z.Sex";
+            string query = @"WITH TrafficSummary AS
+                            (
+                                SELECT
+                                    Barcode,
+                                    COUNT(*) AS TrafficCount,
+                                    CASE 
+                                        WHEN COUNT(*) % 2 = 1 THEN 1
+                                        ELSE 0
+                                    END AS IsInside
+                                FROM Traffic
+                                GROUP BY Barcode
+                            )
+
+                            SELECT
+                                Z.CaravanId,
+                                Z.Sex,
+
+                                COUNT(T.Barcode) AS TotalTraffic,
+
+                                COUNT(DISTINCT T.Barcode) AS TotalRegister,
+
+                                COUNT(
+                                    CASE 
+                                        WHEN TS.IsInside = 1 THEN 1
+                                    END
+                                ) AS TotalInside,
+
+                                COUNT(DISTINCT Z.Id) AS TotalZaer
+
+                            FROM Zaer Z
+
+                            LEFT JOIN Traffic T
+                                ON T.Barcode = Z.Id
+
+                            LEFT JOIN TrafficSummary TS
+                                ON TS.Barcode = Z.Id
+
+                            GROUP BY
+                                Z.CaravanId,
+                                Z.Sex
+                            ";
 
 
-            List<TeamReportDto> result = connection.Query<TeamReportDto>(selectQuery).ToList();
-
-            return result;
+            return connection.Query<TeamReportDto>(query).ToList();
         }
 
         public int deleteZaer(string Id)
         {
-            var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
 
-            string deleteZaer = "DELETE Zaer WHERE Id = @Id";
-            string deleteTraffic = "DELETE Traffic WHERE Barcode = @Id";
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
 
             try
             {
-                connection.Execute(deleteTraffic, new { Id = Id });
-                connection.Execute(deleteZaer, new { Id = Id });
+                // حذف ترددها
+                connection.Execute(
+                    "DELETE FROM Traffic WHERE Barcode = @Id",
+                    new { Id },
+                    transaction);
+
+
+                // حذف زائر
+                connection.Execute(
+                    "DELETE FROM Zaer WHERE Id = @Id",
+                    new { Id },
+                    transaction);
+
+
+                transaction.Commit();
+
+
+                // حذف تصویر از فایل سیستم
+                string imagePath = Path.Combine(
+                    _options.UploadPath,
+                    $"{Id}.png");
+
+                if (File.Exists(imagePath))
+                {
+                    File.Delete(imagePath);
+                }
+
+
                 return 1;
             }
-            catch (Exception)
+            catch
             {
+                transaction.Rollback();
                 return 0;
-                throw;
             }
         }
 
         public int SaveZaer(ZaerModel model)
         {
-            var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            using var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
 
+            connection.Open();
 
-            model.Fullname = model.Fullname == null ? "NULL" : $"N'{model.Fullname}'";
-            model.NationalCode = model.NationalCode == null ? "NULL" : $"N'{model.NationalCode}'";
-            model.Sex = model.Sex == null ? 1 : model.Sex;
-            model.CaravanId = model.CaravanId == null ? 1 : model.CaravanId;
-
-            string query = 
-                $@"IF EXISTS (SELECT 1 FROM Zaer WHERE Id = {model.Id})
-                BEGIN    
-                        UPDATE Zaer
-                        SET Fullname = {model.Fullname}, Sex = {model.Sex}, CaravanId = {model.CaravanId}, [Image] = N'{model.Image}', [NationalCode] ={model.NationalCode}      
-                        WHERE Id = {model.Id}
-                END
-                  ELSE
-                BEGIN
-                    INSERT INTO Zaer (Fullname, NationalCode, Sex, CaravanId, [Image])
-                    VALUES ({model.Fullname}, {model.NationalCode}, {model.Sex}, {model.CaravanId}, N'{model.Image}')
-                END";
+            using var transaction = connection.BeginTransaction();
 
             try
             {
-                connection.Execute(query);
+                model.Sex ??= 1;
+                model.CaravanId ??= 1;
+
+                int count = connection.ExecuteScalar<int>(
+                    "SELECT COUNT(*) FROM Zaer WHERE Id=@Id",
+                    new { model.Id },
+                    transaction);
+
+                if (count == 0)
+                {
+                    connection.Execute(@"INSERT INTO Zaer
+                                        (
+                                            Fullname,
+                                            NationalCode,
+                                            Sex,
+                                            CaravanId
+                                        )
+                                        VALUES
+                                        (
+                                            @Fullname,
+                                            @NationalCode,
+                                            @Sex,
+                                            @CaravanId
+                                        )",
+                    new
+                    {
+                        model.Id,
+                        model.Fullname,
+                        model.NationalCode,
+                        model.Sex,
+                        model.CaravanId
+                    },
+                    transaction);
+                }
+                else
+                {
+                    connection.Execute(@"UPDATE Zaer
+                                        SET
+                                            Fullname=@Fullname,
+                                            NationalCode=@NationalCode,
+                                            Sex=@Sex,
+                                            CaravanId=@CaravanId
+                                        WHERE Id=@Id",
+                    new
+                    {
+                        model.Id,
+                        model.Fullname,
+                        model.NationalCode,
+                        model.Sex,
+                        model.CaravanId
+                    },
+                    transaction);
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.Image))
+                {
+                    Directory.CreateDirectory(_options.UploadPath);
+
+                    string base64 = model.Image;
+
+                    int comma = base64.IndexOf(',');
+                    if (comma >= 0)
+                        base64 = base64[(comma + 1)..];
+
+                    byte[] imageBytes = Convert.FromBase64String(base64);
+
+                    string imagePath = Path.Combine(
+                        _options.UploadPath,
+                        $"{model.Id}.png");
+
+                    File.WriteAllBytes(imagePath, imageBytes);
+                }
+
+                transaction.Commit();
+
                 return 1;
             }
-            catch (Exception)
+            catch
             {
+                transaction.Rollback();
                 return 0;
-                throw;
             }
-
-            
         }
 
-    }
+        public List<CaravanModel> CaravanList()
+        {
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
+
+
+            return connection.Query<CaravanModel>(
+                @"SELECT 
+                Id,
+                Name,
+                Admin
+              FROM Caravan
+              ORDER BY Id DESC")
+                .ToList();
+        }
+
+
+
+        public int SaveCaravan(CaravanModel model)
+        {
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
+
+
+            connection.Open();
+
+
+            try
+            {
+
+                if (model.Id == null || model.Id == 0)
+                {
+                    connection.Execute(
+                        @"INSERT INTO Caravan
+                    (
+                        Name,
+                        Admin
+                    )
+                    VALUES
+                    (
+                        @Name,
+                        @Admin
+                    )",
+                        model);
+                }
+                else
+                {
+                    connection.Execute(
+                        @"UPDATE Caravan
+                    SET
+                        Name=@Name,
+                        Admin=@Admin
+                    WHERE Id=@Id",
+                        model);
+                }
+
+
+                return 1;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+
+
+
+        public int DeleteCaravan(int id)
+        {
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
+
+
+            connection.Open();
+
+
+            using var transaction = connection.BeginTransaction();
+
+
+            try
+            {
+                // اگر زائر وابسته دارد حذف شود
+                connection.Execute(
+                    @"DELETE FROM Traffic
+                  WHERE Barcode IN
+                  (
+                      SELECT Id 
+                      FROM Zaer 
+                      WHERE CaravanId=@Id
+                  )",
+                    new { Id = id },
+                    transaction);
+
+
+
+                connection.Execute(
+                    @"DELETE FROM Zaer
+                  WHERE CaravanId=@Id",
+                    new { Id = id },
+                    transaction);
+
+
+
+                connection.Execute(
+                    @"DELETE FROM Caravan
+                  WHERE Id=@Id",
+                    new { Id = id },
+                    transaction);
+
+
+
+                transaction.Commit();
+
+                return 1;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return 0;
+            }
+        }
+        }
+
+    
 
     public class ZaerModel
     {
@@ -191,5 +566,17 @@ namespace Repository
         public int TotalRegister { get; set; }
         public int TotalInside { get; set; }
         public int TotalZaer { get; set; }
+    }
+
+    public class CaravanModel
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public string? Admin { get; set; }
+    }
+
+    public class UploadOptions
+    {
+        public string UploadPath { get; set; } = "";
     }
 }

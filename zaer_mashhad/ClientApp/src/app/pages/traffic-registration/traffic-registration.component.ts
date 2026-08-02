@@ -9,7 +9,8 @@ import * as models from 'src/app/global.model';
   templateUrl: './traffic-registration.component.html',
   styleUrls: ['./traffic-registration.component.css']
 })
-export class TrafficRegistrationComponent implements OnInit {
+export class TrafficRegistrationComponent implements OnInit
+{
 
   barcode: any = null;
   loading: boolean = false;
@@ -33,6 +34,8 @@ export class TrafficRegistrationComponent implements OnInit {
     traffic: []
   };
 
+  searchOnly: boolean = false;
+
   @ViewChildren('inputZaer') inputZaerElement: any;
 
   constructor(
@@ -40,40 +43,56 @@ export class TrafficRegistrationComponent implements OnInit {
     private readonly globalSvc: GlobalService,
     private toastr: ToastrService) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void
+  {
   }
 
-  registrZaer() {
+registrZaer() {
+
     if (this.barcode.toString().length != 4) return;
+
     this.loading = true;
 
 
-    this.globalSvc.registrZaer(this.barcode).subscribe((data: models.RegisterModel[]) => {
+    this.globalSvc
+        .registrZaer(this.barcode, !this.searchOnly)
+        .subscribe((data: models.RegisterModel[]) => {
 
-      if (data.length) {
-        this.model = JSON.parse(JSON.stringify(data[0]));
-        this.clear();
-      } else {
-        this.clear();
-        this.toastr.error('خطا !', 'کاربر یافت نشد');
-      }
-    }, err => {
-      this.clear();
-      this.toastr.error('خطا !', 'کاربر یافت نشد');
-    })
 
-  }
+            if (data.length) {
 
-  clear() {
+                this.model = JSON.parse(JSON.stringify(data[0]));
+                this.clear();
+
+            } else {
+
+                this.clear();
+                this.toastr.error('خطا !', 'کاربر یافت نشد');
+            }
+
+
+        }, err => {
+
+            this.clear();
+            this.toastr.error('خطا !', 'کاربر یافت نشد');
+
+        });
+
+}
+
+  clear()
+  {
 
     this.barcode = null;
     this.loading = false;
-    setTimeout(() => {
+    setTimeout(() =>
+    {
       this.inputZaerElement.first.nativeElement.focus()
     }, 10)
   }
 
-  newZaer() {
+  newZaer()
+  {
     this.editMode = true;
     this.modelForm = {
       fullname: "",
@@ -85,13 +104,15 @@ export class TrafficRegistrationComponent implements OnInit {
     };
   }
 
-  editZaer() {
+  editZaer()
+  {
     this.editMode = true;
     this.modelForm = JSON.parse(JSON.stringify(this.model));
   }
 
 
-  clearModle() {
+  clearModle()
+  {
     this.model = {
       fullname: "",
       nationalCode: "",
@@ -102,7 +123,8 @@ export class TrafficRegistrationComponent implements OnInit {
     };
   }
 
-  logout() {
+  logout()
+  {
     this.globalSvc.logout();
   }
 

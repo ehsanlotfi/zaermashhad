@@ -8,45 +8,55 @@ import * as models from 'src/app/global.model';
 @Injectable({
   providedIn: 'root',
 })
-export class GlobalService {
+export class GlobalService
+{
   token: string | null = null;
 
   constructor(
     private readonly router: Router,
     private readonly http: HttpClient
-  ) {}
+  ) { }
 
-  getAuthToken(): string {
+  getAuthToken(): string
+  {
     return localStorage.getItem('token') as string;
   }
 
-  checkUser() {
+  checkUser()
+  {
     localStorage.getItem('token');
     this.token = localStorage.getItem('token');
     return this.token ? of(true) : of(false);
   }
 
-  login(username: string, password: string) {
+  login(username: string, password: string)
+  {
     return this.http.post(ROUTERAPI.auth, { username, password });
   }
 
-  logout() {
+  logout()
+  {
     this.token = null;
     localStorage.removeItem('token');
     this.router.navigate(['login']);
   }
 
-  registrZaer(barcode: string) {
+  registrZaer(barcode: string, registerTraffic: boolean = true)
+  {
+
     return this.http.get<models.RegisterModel[]>(
-      `${ROUTERAPI.registr}${barcode}`
+      `${ROUTERAPI.registr}${barcode}?registerTraffic=${registerTraffic}`
     );
+
   }
 
-  deleteZaer(id: number) {
+  deleteZaer(id: number)
+  {
     return this.http.get(`${ROUTERAPI.delete}${id}`);
   }
 
-  compressImgae(imageFile: File) {
+  compressImgae(imageFile: File)
+  {
     const formData = new FormData();
     formData.append('imageFile', imageFile);
 
@@ -55,37 +65,56 @@ export class GlobalService {
     });
   }
 
-  saveZaer(model: models.ZaerModel) {
+  saveZaer(model: models.ZaerModel)
+  {
     return this.http.post<string>(ROUTERAPI.saveZaer, model);
   }
 
-  uploadZaerImage(zaerId: number, formData: FormData): Observable<any> {
+  uploadZaerImage(zaerId: number, formData: FormData): Observable<any>
+  {
     return this.http.post(ROUTERAPI.upload + zaerId, formData);
   }
 
-  deleteZaerImage(zaerId: number): Observable<any> {
+  deleteZaerImage(zaerId: number): Observable<any>
+  {
     return this.http.delete(ROUTERAPI.saveZaer);
   }
 
-  getAllZaer() {
+  getAllZaer()
+  {
     return this.http.get<models.TotalModel[]>(ROUTERAPI.getAllZaer);
   }
 
-  zaerList(caravanId: number) {
+  zaerList(caravanId: number)
+  {
     return this.http.get<models.ZaerModel[]>(
       `${ROUTERAPI.zaerList}${caravanId}`
     );
   }
 
-  trafficReport() {
+
+  zaerExcel(caravanId: number)
+  {
+    return this.http.get(
+      `${ROUTERAPI.zaerList}${caravanId}?excel=true`,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
+
+  trafficReport()
+  {
     return this.http.get<models.TrafficSexModel[]>(ROUTERAPI.trafficReport);
   }
 
-  teamReport() {
+  teamReport()
+  {
     return this.http.get<models.TeamReportModel[]>(ROUTERAPI.teamReport);
   }
 
-  getCaravans(): Observable<models.CaravanModel[]> {
+  getCaravans(): Observable<models.CaravanModel[]>
+  {
     return of([
       { id: 1, name: 'انصارالمهدی', admin: 'آقای یعقوبی' },
       { id: 2, name: 'محبان حضرت معصومه (س)', admin: 'خانم اصغری' },
@@ -114,8 +143,10 @@ export class GlobalService {
 @Pipe({
   name: 'caravan',
 })
-export class CaravanIdiPipe implements PipeTransform {
-  transform(caravanId: number, type: 'name' | 'admin'): string {
+export class CaravanIdiPipe implements PipeTransform
+{
+  transform(caravanId: number, type: 'name' | 'admin'): string
+  {
     if (!caravanId) return '';
 
     const caravans = [

@@ -1,53 +1,136 @@
-CREATE TABLE [dbo].[Traffic](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Barcode] [int] NOT NULL,
-	[Date] [datetime] NULL,
- CONSTRAINT [PK_Traffic] PRIMARY KEY CLUSTERED 
+
+/* =========================
+   Users
+========================= */
+
+CREATE TABLE [dbo].[Users]
 (
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
+    [Id] INT IDENTITY(1,1) NOT NULL,
+    [Username] NVARCHAR(50) NOT NULL,
+    [Password] NVARCHAR(200) NOT NULL,
+    [Fullname] NVARCHAR(50) NULL,
+    [IsActive] TINYINT NOT NULL DEFAULT 1,
+
+    CONSTRAINT [PK_Users]
+        PRIMARY KEY CLUSTERED ([Id])
+);
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 12/06/1403 08:52:45 ق.ظ ******/
-SET ANSI_NULLS ON
+
+
+CREATE UNIQUE INDEX IX_Users_Username
+ON Users(Username);
 GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Users](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Username] [nvarchar](50) NULL,
-	[Password] [nvarchar](200) NULL,
-	[Fullname] [nvarchar](50) NULL,
-	[IsActive] [tinyint] NULL,
- CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
+
+
+
+/* =========================
+   Caravan
+========================= */
+
+CREATE TABLE [dbo].[Caravan]
 (
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
+    [Id] INT IDENTITY(1,1) NOT NULL,
+    [Name] NVARCHAR(100) NOT NULL,
+    [Admin] NVARCHAR(100) NULL,
+    [City] NVARCHAR(100) NULL,
+
+    CONSTRAINT [PK_Caravan]
+        PRIMARY KEY CLUSTERED ([Id])
+);
 GO
-/****** Object:  Table [dbo].[Zaer]    Script Date: 12/06/1403 08:52:45 ق.ظ ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Zaer](
-	[Id] [int] IDENTITY(1000,1) NOT NULL,
-	[Fullname] [nvarchar](50) NULL,
-	[NationalCode] [char](10) NULL,
-	[Sex] [tinyint] NULL,
-	[Team] [nvarchar](50) NULL,
-	[TeamAdmin] [nvarchar](50) NULL,
-	[CaravanId] [int] NULL,
-	[Image] [nvarchar](max) NULL,
- CONSTRAINT [PK_zaer] PRIMARY KEY CLUSTERED 
+
+
+
+/* =========================
+   Zaer
+========================= */
+
+CREATE TABLE [dbo].[Zaer]
 (
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+    [Id] INT IDENTITY(1000,1) NOT NULL,
+
+    [Fullname] NVARCHAR(50) NULL,
+
+    -- کد ملی با صفر اول
+    [NationalCode] VARCHAR(10) NULL,
+
+    [Sex] TINYINT NOT NULL DEFAULT 1,
+
+    [CaravanId] INT NULL,
+
+
+    CONSTRAINT [PK_Zaer]
+        PRIMARY KEY CLUSTERED ([Id])
+);
 GO
-INSERT INTO [dbo].[Users] 
-    ([Username], [Password], [Fullname], [IsActive])
-VALUES 
-    ('admin', '$2a$11$pCF4869ehPyko7Az8s/l6eumvN3LfcLni50Nwc7IGzwUTA3y6nlLu', 'admin', 1)
+
+
+CREATE UNIQUE INDEX IX_Zaer_NationalCode
+ON Zaer(NationalCode)
+WHERE NationalCode IS NOT NULL;
 GO
--- Aa123456
+
+
+ALTER TABLE Zaer
+ADD CONSTRAINT FK_Zaer_Caravan
+FOREIGN KEY(CaravanId)
+REFERENCES Caravan(Id);
+GO
+
+
+
+/* =========================
+   Traffic
+========================= */
+
+CREATE TABLE [dbo].[Traffic]
+(
+    [Id] INT IDENTITY(1,1) NOT NULL,
+
+    [Barcode] INT NOT NULL,
+
+    [Date] DATETIME NOT NULL
+        DEFAULT GETDATE(),
+
+
+    CONSTRAINT [PK_Traffic]
+        PRIMARY KEY CLUSTERED ([Id])
+);
+GO
+
+
+
+ALTER TABLE Traffic
+ADD CONSTRAINT FK_Traffic_Zaer
+FOREIGN KEY(Barcode)
+REFERENCES Zaer(Id)
+ON DELETE CASCADE;
+GO
+
+
+
+CREATE NONCLUSTERED INDEX IX_Traffic_Barcode_Date
+ON Traffic(Barcode, Date DESC);
+GO
+
+
+
+/* =========================
+   Default Admin User
+========================= */
+
+INSERT INTO Users
+(
+    Username,
+    Password,
+    Fullname,
+    IsActive
+)
+VALUES
+(
+    'admin',
+    '$2a$11$pCF4869ehPyko7Az8s/l6eumvN3LfcLni50Nwc7IGzwUTA3y6nlLu',
+    'admin',
+    1
+);
+GO

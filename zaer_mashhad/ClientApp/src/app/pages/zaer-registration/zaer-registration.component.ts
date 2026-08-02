@@ -1,10 +1,8 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild, ViewChildren } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { GlobalService } from 'src/app/global.service';
 import * as models from 'src/app/global.model';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
+
 
 @Component({
   selector: 'app-zaer-registration',
@@ -14,132 +12,294 @@ import { saveAs } from 'file-saver';
 export class ZaerRegistrationComponent implements OnInit
 {
 
-  @ViewChild('nationalCodeDom', { static: true }) nationalCodeDom: ElementRef;
-  loading: boolean = false;
+  @ViewChild('nationalCodeDom', { static: true })
+  nationalCodeDom!: ElementRef;
+
+
+  loading = false;
+
+
   caravans: models.CaravanModel[] = [];
 
+
   sexs = [
-    { id: 0, name: "خانم" },
-    { id: 1, name: "آقا" },
-  ]
+    {
+      id: 0,
+      name: "خانم"
+    },
+    {
+      id: 1,
+      name: "آقا"
+    }
+  ];
+
 
   zaer: models.ZaerModel = new models.ZaerModel();
+
+
   zaerList: models.ZaerModel[] = [];
+
+
+  selectedImage?: File;
+
+
   constructor(
-    private readonly router: Router,
     private readonly globalSvc: GlobalService,
-    private renderer: Renderer2,
-    private toastr: ToastrService) { }
+    private readonly renderer: Renderer2,
+    private readonly toastr: ToastrService
+  )
+  {
+
+  }
+
 
   ngOnInit(): void
   {
-    this.globalSvc.getCaravans().subscribe(caravans =>
-    {
-      this.caravans = caravans;
-      this.getZaerList();
-    })
+    this.loadCaravans();
   }
+
+  loadCaravans()
+  {
+    this.globalSvc.getCaravans()
+      .subscribe(
+        caravans =>
+        {
+          this.caravans = caravans;
+          this.getZaerList();
+        },
+        err =>
+        {
+          this.toastr.error("خطا در دریافت کاروان‌ها");
+        }
+      );
+  }
+
+
 
   saveZaer()
   {
+    if (!this.zaer.fullname)
+    {
+      this.toastr.warning("نام و نام خانوادگی را وارد کنید");
+      return;
+    }
+
+
+    if (!this.zaer.caravanId)
+    {
+      this.toastr.warning("کاروان را انتخاب کنید");
+      return;
+    }
+
+
     this.loading = true;
-    this.globalSvc.saveZaer(this.zaer).subscribe((id: string) =>
-    {
-      this.toastr.success("عملیات با موفقیت انجام شد");
-    }, err =>
-    {
-      this.toastr.error("خطایی رخ داده است");
-    }, () =>
-    {
-      this.zaer.fullname = "";
-      this.zaer.nationalCode = "";
-      this.zaer.image = "";
-      this.renderer.selectRootElement(this.nationalCodeDom.nativeElement).focus();
-      this.getZaerList();
-    });
+
+
+    this.globalSvc.saveZaer(this.zaer)
+      .subscribe(
+        (id: any) =>
+        {
+          if (this.selectedImage)
+          {
+            this.uploadImage(id);
+          }
+          else
+          {
+            this.finishSave();
+          }
+        },
+        err =>
+        {
+          this.loading = false;
+          this.toastr.error("خطا در ذخیره اطلاعات");
+        }
+      );
+  }
+
+
+
+
+  uploadImage(id: number)
+  {
+    const formData = new FormData();
+
+
+    formData.append(
+      "file",
+      this.selectedImage!,
+      this.selectedImage!.name
+    );
+
+
+    this.globalSvc.uploadZaerImage(id, formData)
+      .subscribe(
+        () =>
+        {
+          this.finishSave();
+        },
+        err =>
+        {
+          this.loading = false;
+
+          this.toastr.warning(
+            "اطلاعات ذخیره شد ولی تصویر ارسال نشد"
+          );
+
+          this.finishSave();
+        }
+      );
+  }
+
+
+
+
+
+  finishSave()
+  {
+    this.loading = false;
+
+
+    this.toastr.success(
+      "عملیات با موفقیت انجام شد"
+    );
+
+
+    this.zaer = new models.ZaerModel();
+
+
+    this.selectedImage = undefined;
+
+
+    this.renderer
+      .selectRootElement(
+        this.nationalCodeDom.nativeElement
+      )
+      .focus();
+
+
+    this.getZaerList();
   }
 
   editZaer(zaer: models.ZaerModel)
   {
-    this.zaer = zaer;
+    this.zaer = {
+      ...zaer
+    };
+
+    this.selectedImage = undefined;
   }
+
+
+
+
 
   deleteZaer(id: number)
   {
+    if (!confirm("آیا از حذف این زائر مطمئن هستید؟"))
+      return;
+
+
     this.loading = true;
-    this.globalSvc.deleteZaer(id).subscribe(list =>
-    {
-      this.getZaerList();
-    })
+
+
+    this.globalSvc.deleteZaer(id)
+      .subscribe(
+        () =>
+        {
+          this.toastr.success(
+            "زائر حذف شد"
+          );
+
+          this.getZaerList();
+        },
+        err =>
+        {
+          this.loading = false;
+
+          this.toastr.error(
+            "خطا در حذف زائر"
+          );
+        }
+      );
   }
+
 
   getZaerList()
   {
+    if (!this.zaer.caravanId)
+      return;
+
+
     this.loading = true;
-    this.globalSvc.zaerList(this.zaer.caravanId!).subscribe(list =>
-    {
-      this.zaerList = list;
-      this.loading = false;
-    })
-  }
 
-  onFileSelected(event: any): void
-  {
-    const file: File = event.target.files[0];
-    const maxSizeInBytes = 100 * 1024; // 100 kb
-    const latestmaxSizeInBytes = 2000 * 1024; // 100 kb
 
-    if (file.size <= maxSizeInBytes)
-    {
-      const reader: FileReader = new FileReader();
-
-      reader.onload = (e: any) =>
+    this.globalSvc.zaerList(this.zaer.caravanId)
+      .subscribe(list =>
       {
-        this.zaer.image = e.target.result;
-      };
-
-      reader.readAsDataURL(file);
-    } else if (file.size <= latestmaxSizeInBytes)
-    {
-      this.toastr.warning("در حال فشرده سازی عکس");
-      this.loading = true;
-      this.globalSvc.compressImgae(file).subscribe(result =>
-      {
-        this.zaer.image = result;
+        this.zaerList = list;
         this.loading = false;
       });
-    } else
-    {
-      this.toastr.error("حجم فایل بیش از حد بزرگ است");
-    }
   }
 
-  exportExcel(): void
+
+  onFileSelected(event: any)
   {
-    const fileName = "data.xlsx";
-    const worksheetName = "Sheet1";
-    const data: any[] = [];
+    const file: File = event.target.files[0];
 
-    this.zaerList.forEach((item: models.ZaerModel) =>
+
+    if (!file)
+      return;
+
+
+    if (!file.type.startsWith("image"))
     {
-      data.push({
-        "بارکد": item.id,
-        "نام و نام خانوادگی": item.fullname,
-        "کد ملی": item.nationalCode,
-        "جنسیت": item.sex ? "آقا" : "خانم",
-        "نام کاروان": this.caravans.find(f => f.id == item.caravanId)?.name,
-        "نام مدیر": this.caravans.find(f => f.id == item.caravanId)?.admin,
-      })
-    });
+      this.toastr.error(
+        "فایل انتخاب شده تصویر نیست"
+      );
 
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    XLSX.utils.book_append_sheet(workbook, worksheet, worksheetName);
+      return;
+    }
 
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-    saveAs(excelBlob, fileName);
+    const maxSize =
+      2 * 1024 * 1024; // 2MB
+
+
+    if (file.size > maxSize)
+    {
+      this.toastr.error(
+        "حجم تصویر نباید بیشتر از ۲ مگابایت باشد"
+      );
+
+      return;
+    }
+
+
+    this.selectedImage = file;
   }
+  exportExcel()
+  {
+    if (!this.zaer.caravanId)
+    {
+      this.toastr.warning("ابتدا کاروان را انتخاب کنید");
+      return;
+    }
+
+
+    this.globalSvc.zaerExcel(this.zaer.caravanId)
+      .subscribe(file =>
+      {
+        const url = window.URL.createObjectURL(file);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'zaer-list.xlsx';
+
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+      });
+  }
+
 
 }
