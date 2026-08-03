@@ -49,8 +49,9 @@ export interface TeamReportModel
 
 export interface CaravanModel
 {
-  id: number,
+  id: any,
   name: string,
-  admin: string,
+  admin?: string,
+  city?: string,
 }
 

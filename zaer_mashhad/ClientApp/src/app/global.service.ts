@@ -115,8 +115,24 @@ export class GlobalService
 
   getCaravans(): Observable<models.CaravanModel[]>
   {
-   return this.http.get<models.CaravanModel[]>(`${ROUTERAPI.caravanList}`);
+    return this.http.get<models.CaravanModel[]>(`${ROUTERAPI.caravanList}`);
   }
+
+   saveCaravan(model: models.CaravanModel)
+  {
+    return this.http.post<number>(
+      `${ROUTERAPI.caravanList}`,
+      model
+    );
+  }
+
+  deleteCaravan(id: number)
+  {
+    return this.http.delete<number>(
+      `${ROUTERAPI.caravanList}/${id}`
+    );
+  }
+
 }
 
 @Pipe({
@@ -153,4 +169,6 @@ export class CaravanIdiPipe implements PipeTransform
 
     return caravans.find((f) => f.id == caravanId)![type].toString();
   }
+
+ 
 }
