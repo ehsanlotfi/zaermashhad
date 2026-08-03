@@ -30,7 +30,7 @@ bin/
 Bin/
 obj/
 Obj/
-
+uploads/
 # Visual Studio 2015 cache/options directory
 .vs/
 
@@ -241,3 +241,5 @@ _Pvt_Extensions
 /zaerine_piyade/ClientApp/.angular/cache/13.3.9
 >>>>>>> 17f5e710cf246ea6e6433ab84a127e8075e298ee
 /zaerine_piyade/ClientApp/yarn.lock
+/zaer_mashhad/wwwroot/uploads
+*.png
