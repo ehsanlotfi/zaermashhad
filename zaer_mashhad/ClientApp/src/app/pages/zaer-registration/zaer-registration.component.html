@@ -5,45 +5,84 @@
         <i class="icon-fo-arrow-right-curved2 f-20 fw-bold ms-1"></i>
         بازگشت
       </button>
-      <select class="form-control form-control-sm w-25 me-2" [(ngModel)]="zaer.caravanId">
-        <option *ngFor="let caravan of caravans" [value]="caravan.id">{{ caravan.name }} ( {{
-          caravan.admin }} ) </option>
+      <select
+        class="form-control form-control-sm w-25 me-2"
+        [(ngModel)]="zaer.caravanId"
+      >
+        <option *ngFor="let caravan of caravans" [value]="caravan.id">
+          {{ caravan.name }} ( {{ caravan.admin }} )
+        </option>
       </select>
-      <button class="btn btn-primary btn-sm me-2" (click)="getZaerList()">نمایش کاروان</button>
-      <a [href]="'/print/0/'+ zaer.caravanId" target="_blank">
-        <button class="btn btn-success me-2"><i class="fa fa-print"></i></button></a>
-      <a [href]="'/print/1/'+ zaer.caravanId" target="_blank">
-        <button class="btn btn-info me-2 text-white"><i class="fa fa-print"></i></button></a>
+      <button class="btn btn-primary btn-sm me-2" (click)="getZaerList()">
+        نمایش کاروان
+      </button>
+      <a [href]="'/print/0/' + zaer.caravanId" target="_blank">
+        <button class="btn btn-success me-2"><i class="fa fa-print"></i></button
+      ></a>
+      <a [href]="'/print/1/' + zaer.caravanId" target="_blank">
+        <button class="btn btn-info me-2 text-white">
+          <i class="fa fa-print"></i></button
+      ></a>
     </div>
     <div>
-      <div *ngIf="loading" class="spinner-border text-primary"> </div>
+      <div *ngIf="loading" class="spinner-border text-primary"></div>
     </div>
   </div>
 </div>
-<input #imageUploader type="file" (change)="onFileSelected($event)" accept="image/*" class="d-none">
+<input
+  #imageUploader
+  type="file"
+  (change)="onFileSelected($event)"
+  accept="image/*"
+  class="d-none"
+/>
 <div class="row mt-4 mx-4" id="main-status">
   <div class="col-3">
-    <div class="bg-white p-3 rounded-4 d-flex gap-3 flex-column align-items-center min-h-80">
+    <div
+      class="bg-white p-3 rounded-4 d-flex gap-3 flex-column align-items-center min-h-80"
+    >
       <div class="w-100 text-center">
-        <img src="{{ zaer.image || 'assets/img/no-img.jpg' }}" class="pointer zaer-image"
-          (click)="imageUploader.click()">
+        <img
+          src="{{ zaer.image || 'assets/img/no-img.jpg' }}"
+          class="pointer zaer-image"
+          (click)="imageUploader.click()"
+        />
       </div>
       <div class="w-100">
-        <input type="text" class="form-control w-100" #nationalCodeDom [(ngModel)]="zaer.nationalCode"
-          placeholder="کد ملی ( بارکد )">
-        <p class="very-small mb-0 me-2 text-warning-emphasis"> کد ملی تکراری، رکورد را بروزرسانی میکند</p>
+        <input
+          type="number"
+          class="form-control w-100"
+          #nationalCodeDom
+          [(ngModel)]="zaer.nationalCode"
+          placeholder="کد ملی ( بارکد )"
+        />
+        <p class="very-small mb-0 me-2 text-warning-emphasis">
+          کد ملی تکراری، رکورد را بروزرسانی میکند
+        </p>
       </div>
       <div class="w-100">
-        <input type="text" class="form-control w-100" [(ngModel)]="zaer.fullname" placeholder="نام و نام خانوادگی">
+        <input
+          type="text"
+          class="form-control w-100"
+          [(ngModel)]="zaer.fullname"
+          placeholder="نام و نام خانوادگی"
+        />
       </div>
       <div class="w-100">
         <select class="form-control w-100" [(ngModel)]="zaer.sex">
-          <option *ngFor="let sex of sexs" [value]="sex.id">{{ sex.name }}</option>
+          <option *ngFor="let sex of sexs" [value]="sex.id">
+            {{ sex.name }}
+          </option>
         </select>
       </div>
       <div class="w-100">
-        <button class="btn btn-success  w-100" [disabled]="!zaer.nationalCode || !zaer.fullname"
-          (click)="saveZaer()">ذخیره</button>
+        <button
+          class="btn btn-success w-100"
+          [disabled]="!zaer.nationalCode || !zaer.fullname || !zaer.caravanId"
+          (click)="saveZaer()"
+        >
+          ذخیره
+        </button>
       </div>
     </div>
   </div>
@@ -54,7 +93,10 @@
         <thead>
           <tr>
             <th class="text-center">
-              <button class="btn btn-info btn-sm text-white" (click)="exportExcel()">
+              <button
+                class="btn btn-info btn-sm text-white"
+                (click)="exportExcel()"
+              >
                 <i class="fa fa-file-excel-o"></i>
               </button>
             </th>
@@ -67,28 +109,45 @@
         <tbody>
           <tr *ngFor="let zaeritem of zaerList">
             <td class="text-center">
-              <img src="{{ zaeritem.image || 'assets/img/no-img.jpg' }}" class="zaer-image-in-list" loading="lazy">
+              <img
+                src="{{ zaeritem.image || 'assets/img/no-img.jpg' }}"
+                class="zaer-image-in-list"
+                loading="lazy"
+              />
             </td>
             <td>{{ zaeritem.nationalCode }}</td>
             <td>{{ zaeritem.fullname }}</td>
-            <td>{{ zaeritem.sex ? 'آقا' : 'خانم' }}</td>
+            <td>{{ zaeritem.sex ? "آقا" : "خانم" }}</td>
             <th>
-              <button class="btn btn-sm btn-warning" (click)="editZaer(zaeritem)">
+              <button
+                class="btn btn-sm btn-warning"
+                (click)="editZaer(zaeritem)"
+              >
                 <i class="fa fa-edit"></i>
               </button>
-              <button class="btn btn-sm btn-danger me-2" mwlConfirmationPopover (confirm)="deleteZaer(zaeritem.id)">
+              <button
+                class="btn btn-sm btn-danger me-2"
+                mwlConfirmationPopover
+                (confirm)="deleteZaer(zaeritem.id)"
+              >
                 <i class="fa fa-times"></i>
               </button>
-              <a [href]="'/print/0/'+ zaer.caravanId + '/' + zaeritem.id" target="_blank"><button
-                  class="btn btn-success btn-sm me-2"><i class="fa fa-print"></i></button></a>
-              <a [href]="'/print/1/'+ zaer.caravanId + '/' + zaeritem.id" target="_blank"><button
-                  class="btn btn-info text-white btn-sm me-2"><i class="fa fa-print"></i></button></a>
+              <a
+                [href]="'/print/0/' + zaer.caravanId + '/' + zaeritem.id"
+                target="_blank"
+                ><button class="btn btn-success btn-sm me-2">
+                  <i class="fa fa-print"></i></button
+              ></a>
+              <a
+                [href]="'/print/1/' + zaer.caravanId + '/' + zaeritem.id"
+                target="_blank"
+                ><button class="btn btn-info text-white btn-sm me-2">
+                  <i class="fa fa-print"></i></button
+              ></a>
             </th>
           </tr>
         </tbody>
       </table>
     </div>
-
   </div>
-
 </div>

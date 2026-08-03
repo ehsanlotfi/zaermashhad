@@ -8,55 +8,45 @@ import * as models from 'src/app/global.model';
 @Injectable({
   providedIn: 'root',
 })
-export class GlobalService
-{
+export class GlobalService {
   token: string | null = null;
 
   constructor(
     private readonly router: Router,
-    private readonly http: HttpClient
-  ) { }
+    private readonly http: HttpClient,
+  ) {}
 
-  getAuthToken(): string
-  {
+  getAuthToken(): string {
     return localStorage.getItem('token') as string;
   }
 
-  checkUser()
-  {
+  checkUser() {
     localStorage.getItem('token');
     this.token = localStorage.getItem('token');
     return this.token ? of(true) : of(false);
   }
 
-  login(username: string, password: string)
-  {
+  login(username: string, password: string) {
     return this.http.post(ROUTERAPI.auth, { username, password });
   }
 
-  logout()
-  {
+  logout() {
     this.token = null;
     localStorage.removeItem('token');
     this.router.navigate(['login']);
   }
 
-  registrZaer(barcode: string, registerTraffic: boolean = true)
-  {
-
+  registrZaer(barcode: string, registerTraffic: boolean = true) {
     return this.http.get<models.RegisterModel[]>(
-      `${ROUTERAPI.registr}${barcode}?registerTraffic=${registerTraffic}`
+      `${ROUTERAPI.registr}${barcode}?registerTraffic=${registerTraffic}`,
     );
-
   }
 
-  deleteZaer(id: number)
-  {
+  deleteZaer(id: number) {
     return this.http.get(`${ROUTERAPI.delete}${id}`);
   }
 
-  compressImgae(imageFile: File)
-  {
+  compressImgae(imageFile: File) {
     const formData = new FormData();
     formData.append('imageFile', imageFile);
 
@@ -65,83 +55,62 @@ export class GlobalService
     });
   }
 
-  saveZaer(model: models.ZaerModel)
-  {
+  saveZaer(m: models.ZaerModel) {
+    const model = { ...m };
+    model.nationalCode = model.nationalCode.toString();
     return this.http.post<string>(ROUTERAPI.saveZaer, model);
   }
 
-  uploadZaerImage(zaerId: number, formData: FormData): Observable<any>
-  {
+  uploadZaerImage(zaerId: number, formData: FormData): Observable<any> {
     return this.http.post(ROUTERAPI.upload + zaerId, formData);
   }
 
-  deleteZaerImage(zaerId: number): Observable<any>
-  {
+  deleteZaerImage(zaerId: number): Observable<any> {
     return this.http.delete(ROUTERAPI.saveZaer);
   }
 
-  getAllZaer()
-  {
+  getAllZaer() {
     return this.http.get<models.TotalModel[]>(ROUTERAPI.getAllZaer);
   }
 
-  zaerList(caravanId: number)
-  {
+  zaerList(caravanId: number) {
     return this.http.get<models.ZaerModel[]>(
-      `${ROUTERAPI.zaerList}${caravanId}`
+      `${ROUTERAPI.zaerList}${caravanId}`,
     );
   }
 
-
-  zaerExcel(caravanId: number)
-  {
-    return this.http.get(
-      `${ROUTERAPI.zaerList}${caravanId}?excel=true`,
-      {
-        responseType: 'blob'
-      }
-    );
+  zaerExcel(caravanId: number) {
+    return this.http.get(`${ROUTERAPI.zaerList}${caravanId}?excel=true`, {
+      responseType: 'blob',
+    });
   }
 
-  trafficReport()
-  {
+  trafficReport() {
     return this.http.get<models.TrafficSexModel[]>(ROUTERAPI.trafficReport);
   }
 
-  teamReport()
-  {
+  teamReport() {
     return this.http.get<models.TeamReportModel[]>(ROUTERAPI.teamReport);
   }
 
-  getCaravans(): Observable<models.CaravanModel[]>
-  {
+  getCaravans(): Observable<models.CaravanModel[]> {
     return this.http.get<models.CaravanModel[]>(`${ROUTERAPI.caravanList}`);
   }
 
-   saveCaravan(model: models.CaravanModel)
-  {
-    return this.http.post<number>(
-      `${ROUTERAPI.caravanList}`,
-      model
-    );
+  saveCaravan(model: models.CaravanModel) {
+    return this.http.post<number>(`${ROUTERAPI.caravanSave}`, model);
   }
 
-  deleteCaravan(id: number)
-  {
-    return this.http.delete<number>(
-      `${ROUTERAPI.caravanList}/${id}`
-    );
+  deleteCaravan(id: number) {
+    return this.http.delete<number>(`${ROUTERAPI.caravanDelete}/${id}`);
   }
-
 }
 
 @Pipe({
   name: 'caravan',
 })
-export class CaravanIdiPipe implements PipeTransform
-{
-  transform(caravanId: number, type: 'name' | 'admin'): string
-  {
+export class CaravanIdiPipe implements PipeTransform {
+  transform(caravanId: number, type: 'name' | 'admin'): string {
     if (!caravanId) return '';
 
     const caravans = [
@@ -164,11 +133,9 @@ export class CaravanIdiPipe implements PipeTransform
       { id: 17, name: 'خادمین', admin: 'هئیت' },
       { id: 18, name: 'متوسلین حضرت رقیه', admin: 'خانم شهربانو بهلولی' },
       { id: 19, name: 'عاشقان ثارالله', admin: 'حسن آذریان' },
-      { id: 20, name: 'حضرت علی اکبر علیه السلام', admin: 'حسین علیمیرزایی' }
+      { id: 20, name: 'حضرت علی اکبر علیه السلام', admin: 'حسین علیمیرزایی' },
     ];
 
     return caravans.find((f) => f.id == caravanId)![type].toString();
   }
-
- 
 }

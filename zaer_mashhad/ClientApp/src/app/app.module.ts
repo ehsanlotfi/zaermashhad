@@ -14,19 +14,21 @@ import { OnlyNumberDirective } from 'src/app/directives/only-number.directive';
 import { JalaliPipe } from 'src/app/pipes/moment.pipe';
 import { AuthGuard } from 'src/app/guards/auth.guard';
 import { InterceptorService } from './core/interceptors.service';
-import { ConfirmationPopoverModule } from "angular-confirmation-popover";
+import { ConfirmationPopoverModule } from 'angular-confirmation-popover';
 import { ZaerRegistrationComponent } from './pages/zaer-registration/zaer-registration.component';
 import { PrintComponent } from './pages/print/print.component';
-export function initWithDependencyFactory(
-  globalSvc: GlobalService
-) {
-
+import { CaravanRegistrationComponent } from './pages/caravan/caravan-registration';
+export function initWithDependencyFactory(globalSvc: GlobalService) {
   return () => {
     return new Promise<void>(async (resolve) => {
       globalSvc.checkUser().subscribe(
-        () => { resolve(); },
-        () => { resolve(); },
-      )
+        () => {
+          resolve();
+        },
+        () => {
+          resolve();
+        },
+      );
     });
   };
 }
@@ -39,9 +41,10 @@ export function initWithDependencyFactory(
     ReportsComponent,
     TrafficRegistrationComponent,
     ZaerRegistrationComponent,
+    CaravanRegistrationComponent,
     OnlyNumberDirective,
     JalaliPipe,
-    CaravanIdiPipe
+    CaravanIdiPipe,
   ],
   imports: [
     BrowserModule,
@@ -54,13 +57,13 @@ export function initWithDependencyFactory(
       preventDuplicates: true,
     }),
     ConfirmationPopoverModule.forRoot({
-      confirmButtonType: "danger",
+      confirmButtonType: 'danger',
       closeOnOutsideClick: true,
-      popoverTitle: "حذف‌کنم؟",
-      popoverMessage: "",
-      placement: "bottom",
-      cancelText: "بیخیال",
-      confirmText: "بله",
+      popoverTitle: 'حذف‌کنم؟',
+      popoverMessage: '',
+      placement: 'bottom',
+      cancelText: 'بیخیال',
+      confirmText: 'بله',
     }),
   ],
   providers: [
@@ -70,16 +73,14 @@ export function initWithDependencyFactory(
       provide: APP_INITIALIZER,
       useFactory: initWithDependencyFactory,
       deps: [GlobalService],
-      multi: true
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,
-      multi: true
+      multi: true,
     },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
-
-
+export class AppModule {}

@@ -6,21 +6,41 @@ import { ReportsComponent } from './pages/reports/reports.component';
 import { TrafficRegistrationComponent } from './pages/traffic-registration/traffic-registration.component';
 import { ZaerRegistrationComponent } from './pages/zaer-registration/zaer-registration.component';
 import { PrintComponent } from './pages/print/print.component';
-
+import { CaravanRegistrationComponent } from './pages/caravan/caravan-registration';
 
 const routes: Routes = [
   { path: '', redirectTo: 'trafic', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] },
-  { path: 'trafic', component: TrafficRegistrationComponent, canActivate: [AuthGuard] },
-  { path: 'zaer', component: ZaerRegistrationComponent, canActivate: [AuthGuard] },
-  { path: 'print/:type/:caravanId', component: PrintComponent, canActivate: [AuthGuard] },
-  { path: 'print/:type/:caravanId/:zaerId', component: PrintComponent, canActivate: [AuthGuard] },
-
+  {
+    path: 'trafic',
+    component: TrafficRegistrationComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'zaer',
+    component: ZaerRegistrationComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'caravan',
+    component: CaravanRegistrationComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'print/:type/:caravanId',
+    component: PrintComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'print/:type/:caravanId/:zaerId',
+    component: PrintComponent,
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
