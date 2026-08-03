@@ -12,6 +12,7 @@ export const ROUTERAPI = {
     zaer: `${environment.origin}api/zaer`,
     getAllZaer: `${environment.origin}api/zaer/get-all-zaer`,
     zaerList: `${environment.origin}api/zaer/zaer-list/`,
+    caravanList: `${environment.origin}api/zaer/caravan-list/`,
     trafficReport: `${environment.origin}api/zaer/traffic-report`,
     teamReport: `${environment.origin}api/zaer/team-report`,
 }
