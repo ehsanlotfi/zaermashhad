@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Repository;
 using System.Text;
-using System.Xml.Linq;
+using zaerine_piyade.Controllers;
 
 namespace zaerine_piyade
 {
@@ -44,9 +43,6 @@ namespace zaerine_piyade
                 };
             });
 
-
-            builder.Services.AddTransient<IZaerRepository, ZaerRepository>();
-            builder.Services.AddTransient<IUserRepository, UserRepository>();
 
             builder.Services.AddSingleton(new UploadOptions
             {

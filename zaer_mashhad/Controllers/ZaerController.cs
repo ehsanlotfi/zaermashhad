@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
-using Repository;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.Data.SqlClient;
@@ -17,7 +16,7 @@ namespace zaerine_piyade.Controllers
         private readonly ILogger<ZaerController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
-        private readonly UploadOptions _options;
+        private readonly string UploadPath = "uploads";
 
         public ZaerController(
             ILogger<ZaerController> logger,
@@ -28,7 +27,6 @@ namespace zaerine_piyade.Controllers
             _logger = logger;
             _configuration = configuration;
             _env = env;
-            _options = options.Value;
         }
 
         [HttpGet("registr/{ZaerId}")]
@@ -96,7 +94,7 @@ namespace zaerine_piyade.Controllers
             if (trafficInfo.Count > 0)
             {
                 string imagePath = Path.Combine(
-                    _options.UploadPath,
+                    UploadPath,
                     $"{ZaerId}.jpg");
 
                 if (System.IO.File.Exists(imagePath))
@@ -143,7 +141,7 @@ namespace zaerine_piyade.Controllers
                 transaction.Commit();
 
                 string imagePath = Path.Combine(
-                    _options.UploadPath,
+                    UploadPath,
                     $"{ZaerId}.jpg");
 
                 if (System.IO.File.Exists(imagePath))
@@ -266,7 +264,7 @@ namespace zaerine_piyade.Controllers
 
                 if (!string.IsNullOrWhiteSpace(model.Image))
                 {
-                    Directory.CreateDirectory(_options.UploadPath);
+                    Directory.CreateDirectory(UploadPath);
 
                     string base64 = model.Image;
 
@@ -306,7 +304,7 @@ namespace zaerine_piyade.Controllers
                     }
 
                     string imagePath = Path.Combine(
-                        _options.UploadPath,
+                        UploadPath,
                         $"{model.Id}.jpg");
 
                     System.IO.File.WriteAllBytes(
@@ -351,8 +349,8 @@ namespace zaerine_piyade.Controllers
             foreach (var item in result)
             {
                 string imagePath = Path.Combine(
-                    _options.UploadPath,
-                    $"{item.Id}.jpg");
+                    UploadPath,
+                    $"{item.NationalCode}.jpg");
 
                 if (System.IO.File.Exists(imagePath))
                 {
@@ -385,7 +383,7 @@ namespace zaerine_piyade.Controllers
                 sheet.Cells[row, 4].Value = item.Sex == 1 ? "مرد" : "زن";
 
                 string file = Path.Combine(
-                    _options.UploadPath,
+                    UploadPath,
                     $"{item.Id}.jpg");
 
                 if (System.IO.File.Exists(file))
@@ -599,5 +597,55 @@ namespace zaerine_piyade.Controllers
                 message = "فایلی وجود ندارد"
             });
         }
+    }
+
+    public class UploadOptions
+    {
+        public string UploadPath { get; set; }
+    }
+
+    public class CaravanModel
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public string? Admin { get; set; }
+        public string? City { get; set; }
+    }
+
+    public class ZaerModel
+    {
+        public int? Id { get; set; }
+        public string? Fullname { get; set; }
+        public string? NationalCode { get; set; }
+        public int? Sex { get; set; }
+        public int? CaravanId { get; set; }
+        public string? Image { get; set; }
+    }
+
+    public class TeamReportDto
+    {
+        public int CaravanId { get; set; }
+        public int Sex { get; set; }
+        public int TotalTraffic { get; set; }
+        public int TotalRegister { get; set; }
+        public int TotalInside { get; set; }
+        public int TotalZaer { get; set; }
+    }
+
+    public class DateList
+    {
+        public DateTime Date { get; set; }
+    }
+
+    public class TrafficOutputDto
+    {
+        public int? Id { get; set; }
+        public string? Fullname { get; set; }
+        public string? NationalCode { get; set; }
+        public short Sex { get; set; }
+        public string? Image { get; set; }
+        public int? CaravanId { get; set; }
+        public int Total { get; set; }
+        public List<DateList>? Traffic { get; set; }
     }
 }

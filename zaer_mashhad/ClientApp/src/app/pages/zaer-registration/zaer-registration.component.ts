@@ -54,7 +54,6 @@ export class ZaerRegistrationComponent implements OnInit {
     this.globalSvc.getCaravans().subscribe(
       (caravans) => {
         this.caravans = caravans;
-        this.getZaerList();
       },
       (err) => {
         this.toastr.error('خطا در دریافت کاروان‌ها');
