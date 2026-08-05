@@ -75,9 +75,9 @@ export class ReportsComponent implements OnInit {
       );
 
       this.teamData = Object.entries(group).map((f: any) => {
-
+        
         return {
-          name: f[0],
+          name: f && f[1][0].caravanName,
 
           totalZaer: f[1].map((t: models.TeamReportModel) => t.totalZaer).reduce((a: number, b: number) => a + b, 0),
           totalZaerMan: f[1].filter((t: models.TeamReportModel) => t.sex == 1).map((t: models.TeamReportModel) => t.totalZaer).reduce((a: number, b: number) => a + b, 0),

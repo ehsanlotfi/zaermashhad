@@ -116,7 +116,7 @@ namespace zaerine_piyade.Controllers
             return trafficInfo;
         }
 
-        [HttpGet("delete/{ZaerId}")]
+        [HttpGet("delete/{NationalCode}")]
         public ActionResult<int> Delete(string NationalCode)
         {
             using var connection = new SqlConnection(
