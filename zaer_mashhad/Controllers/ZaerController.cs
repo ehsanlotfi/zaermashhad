@@ -93,14 +93,14 @@ namespace zaerine_piyade.Controllers
 
             if (trafficInfo.Count > 0)
             {
-                //string imagePath = Path.Combine(
-                //    UploadPath,
-                //    $"{trafficInfo[0].NationalCode}.jpg");
+                string imagePath = Path.Combine(
+                    UploadPath,
+                    $"{trafficInfo[0].NationalCode}.jpg");
 
-                //if (System.IO.File.Exists(imagePath))
-                //{
-                //    trafficInfo[0].Image = $"/uploads/{ZaerId}.jpg";
-                //}
+                if (System.IO.File.Exists(imagePath))
+                {
+                    trafficInfo[0].Image = $"/uploads/{trafficInfo[0].NationalCode}.jpg";
+                }
 
                 trafficInfo[0].Traffic = connection.Query<DateList>(
                     @"SELECT Date
@@ -363,12 +363,14 @@ namespace zaerine_piyade.Controllers
             foreach (var item in result)
             {
                 string imagePath = Path.Combine(
-                     "uploads",
+                     UploadPath,
                     $"{item.NationalCode}.jpg");
 
                 if (System.IO.File.Exists(imagePath))
                 {
-                    item.Image = imagePath;
+                    item.Image = Path.Combine(
+                     "uploads",
+                    $"{item.NationalCode}.jpg");
                 }
             }
 
