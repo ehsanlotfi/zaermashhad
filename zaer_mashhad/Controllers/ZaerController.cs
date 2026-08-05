@@ -16,7 +16,7 @@ namespace zaerine_piyade.Controllers
         private readonly ILogger<ZaerController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
-        private readonly string UploadPath = "uploads";
+        private readonly string UploadPath = Path.Combine("wwwroot", "uploads");
 
         public ZaerController(
             ILogger<ZaerController> logger,
@@ -93,14 +93,14 @@ namespace zaerine_piyade.Controllers
 
             if (trafficInfo.Count > 0)
             {
-                string imagePath = Path.Combine(
-                    UploadPath,
-                    $"{ZaerId}.jpg");
+                //string imagePath = Path.Combine(
+                //    UploadPath,
+                //    $"{trafficInfo[0].NationalCode}.jpg");
 
-                if (System.IO.File.Exists(imagePath))
-                {
-                    trafficInfo[0].Image = $"/uploads/{ZaerId}.jpg";
-                }
+                //if (System.IO.File.Exists(imagePath))
+                //{
+                //    trafficInfo[0].Image = $"/uploads/{ZaerId}.jpg";
+                //}
 
                 trafficInfo[0].Traffic = connection.Query<DateList>(
                     @"SELECT Date
@@ -117,7 +117,7 @@ namespace zaerine_piyade.Controllers
         }
 
         [HttpGet("delete/{ZaerId}")]
-        public ActionResult<int> Delete(string ZaerId)
+        public ActionResult<int> Delete(string NationalCode)
         {
             using var connection = new SqlConnection(
                 _configuration.GetConnectionString("DefaultConnection"));
@@ -129,20 +129,20 @@ namespace zaerine_piyade.Controllers
             try
             {
                 connection.Execute(
-                    "DELETE FROM Traffic WHERE Barcode=@Id",
-                    new { Id = ZaerId },
+                    "DELETE FROM Traffic WHERE Barcode=@NationalCode",
+                    new { NationalCode = NationalCode },
                     transaction);
 
                 connection.Execute(
-                    "DELETE FROM Zaer WHERE Id=@Id",
-                    new { Id = ZaerId },
+                    "DELETE FROM Zaer WHERE NationalCode=@NationalCode",
+                    new { NationalCode = NationalCode },
                     transaction);
 
                 transaction.Commit();
 
                 string imagePath = Path.Combine(
                     UploadPath,
-                    $"{ZaerId}.jpg");
+                    $"{NationalCode}.jpg");
 
                 if (System.IO.File.Exists(imagePath))
                 {
@@ -165,32 +165,39 @@ namespace zaerine_piyade.Controllers
                 _configuration.GetConnectionString("DefaultConnection"));
 
             string query = @"WITH TrafficSummary AS
-            (
-                SELECT
-                    Barcode,
-                    COUNT(*) AS TrafficCount,
-                    CASE
-                        WHEN COUNT(*)%2=1 THEN 1
-                        ELSE 0
-                    END AS IsInside
-                FROM Traffic
-                GROUP BY Barcode
-            )
-            SELECT
-                Z.CaravanId,
-                Z.Sex,
-                COUNT(T.Barcode) AS TotalTraffic,
-                COUNT(DISTINCT T.Barcode) AS TotalRegister,
-                COUNT(CASE WHEN TS.IsInside=1 THEN 1 END) AS TotalInside,
-                COUNT(DISTINCT Z.Id) AS TotalZaer
-            FROM Zaer Z
-            LEFT JOIN Traffic T
-                ON T.Barcode=Z.Id
-            LEFT JOIN TrafficSummary TS
-                ON TS.Barcode=Z.Id
-            GROUP BY
-                Z.CaravanId,
-                Z.Sex";
+                                (
+                                    SELECT
+                                        Barcode,
+                                        COUNT(*) AS TrafficCount,
+                                        CASE
+                                            WHEN COUNT(*) % 2 = 1 THEN 1
+                                            ELSE 0
+                                        END AS IsInside
+                                    FROM Traffic
+                                    GROUP BY Barcode
+                                )
+                                SELECT
+                                    Z.CaravanId,
+                                    C.Name AS CaravanName,
+                                    Z.Sex,
+                                    COUNT(T.Barcode) AS TotalTraffic,
+                                    COUNT(DISTINCT T.Barcode) AS TotalRegister,
+                                    COUNT(CASE WHEN TS.IsInside = 1 THEN 1 END) AS TotalInside,
+                                    COUNT(DISTINCT Z.Id) AS TotalZaer
+                                FROM Zaer Z
+                                INNER JOIN Caravan C
+                                    ON C.Id = Z.CaravanId
+                                LEFT JOIN Traffic T
+                                    ON T.Barcode = Z.Id
+                                LEFT JOIN TrafficSummary TS
+                                    ON TS.Barcode = Z.Id
+                                GROUP BY
+                                    Z.CaravanId,
+                                    C.Name,
+                                    Z.Sex
+                                ORDER BY
+                                    C.Name,
+                                    Z.Sex";
 
             return connection.Query<TeamReportDto>(query).ToList();
         }
@@ -277,35 +284,33 @@ namespace zaerine_piyade.Controllers
                     using var inputStream = new MemoryStream(imageBytes);
                     using var image = Image.Load(inputStream);
 
-                    int quality = 75;
+                    int quality = 80;
 
                     using var outputStream = new MemoryStream();
 
-                    var encoder = new JpegEncoder
+                    while (true)
                     {
-                        Quality = quality
-                    };
-
-                    image.Save(outputStream, encoder);
-
-                    while (outputStream.Length > 50 * 1024 && quality > 5)
-                    {
-                        quality -= 5;
-
                         outputStream.SetLength(0);
                         outputStream.Position = 0;
 
-                        encoder = new JpegEncoder
+                        var encoder = new JpegEncoder
                         {
                             Quality = quality
                         };
 
                         image.Save(outputStream, encoder);
+
+                        if (outputStream.Length <= 50 * 1024 || quality <= 10)
+                            break;
+
+                        quality -= 5;
                     }
+
 
                     string imagePath = Path.Combine(
                         UploadPath,
-                        $"{model.Id}.jpg");
+                        $"{model.NationalCode}.jpg");
+
 
                     System.IO.File.WriteAllBytes(
                         imagePath,
@@ -326,35 +331,44 @@ namespace zaerine_piyade.Controllers
         [HttpGet("zaer-list/{CaravanId}")]
         public IActionResult ZaerList(
             int CaravanId,
+            string? any = null,
             bool excel = false)
         {
             using var connection = new SqlConnection(
                 _configuration.GetConnectionString("DefaultConnection"));
 
             var result = connection.Query<ZaerModel>(
-                @"SELECT
-            Id,
-            Fullname,
-            NationalCode,
-            Sex,
-            CaravanId
-        FROM Zaer
-        WHERE CaravanId=@Id
-        ORDER BY Id DESC",
-                new
-                {
-                    Id = CaravanId
-                }).ToList();
+                                             @"SELECT
+                                                Id,
+                                                Fullname,
+                                                NationalCode,
+                                                Sex,
+                                                CaravanId
+                                            FROM Zaer
+                                            WHERE CaravanId=@Id
+                                              AND
+                                              (
+                                                    @Any IS NULL
+                                                 OR @Any=''
+                                                 OR Fullname LIKE '%' + @Any + '%'
+                                                 OR NationalCode LIKE '%' + @Any + '%'
+                                              )
+                                            ORDER BY Id DESC",
+                                             new
+                                             {
+                                                 Id = CaravanId,
+                                                 Any = any
+                                             }).ToList();
 
             foreach (var item in result)
             {
                 string imagePath = Path.Combine(
-                    UploadPath,
+                     "uploads",
                     $"{item.NationalCode}.jpg");
 
                 if (System.IO.File.Exists(imagePath))
                 {
-                    item.Image = $"/uploads/{item.Id}.jpg";
+                    item.Image = imagePath;
                 }
             }
 
@@ -383,13 +397,13 @@ namespace zaerine_piyade.Controllers
                 sheet.Cells[row, 4].Value = item.Sex == 1 ? "مرد" : "زن";
 
                 string file = Path.Combine(
-                    UploadPath,
-                    $"{item.Id}.jpg");
+                                UploadPath,
+                                $"{item.NationalCode}.jpg");
 
                 if (System.IO.File.Exists(file))
                 {
                     var picture = sheet.Drawings.AddPicture(
-                        $"image_{item.Id}",
+                        $"image_{item.NationalCode}",
                         new FileInfo(file));
 
                     picture.SetPosition(row - 1, 5, 0, 0);
@@ -408,6 +422,8 @@ namespace zaerine_piyade.Controllers
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "zaer-list.xlsx");
         }
+
+
         [HttpGet("caravan-list")]
         public ActionResult<List<CaravanModel>> List()
         {
@@ -517,86 +533,6 @@ namespace zaerine_piyade.Controllers
             }
         }
 
-        [HttpPost("upload/{zaerId}")]
-        public async Task<IActionResult> UploadZaerImage(
-            int zaerId,
-            IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("فایلی ارسال نشده است");
-
-            var uploadPath = Path.Combine(
-                _env.WebRootPath,
-                "uploads");
-
-            if (!Directory.Exists(uploadPath))
-                Directory.CreateDirectory(uploadPath);
-
-            var filePath = Path.Combine(
-                uploadPath,
-                $"{zaerId}.jpg");
-
-            using var image = await Image.LoadAsync(file.OpenReadStream());
-
-            int quality = 75;
-
-            var encoder = new JpegEncoder
-            {
-                Quality = quality
-            };
-
-            using var ms = new MemoryStream();
-
-            await image.SaveAsync(ms, encoder);
-
-            while (ms.Length > 50 * 1024 && quality > 5)
-            {
-                ms.SetLength(0);
-
-                quality -= 5;
-
-                encoder = new JpegEncoder
-                {
-                    Quality = quality
-                };
-
-                await image.SaveAsync(ms, encoder);
-            }
-
-            await System.IO.File.WriteAllBytesAsync(
-                filePath,
-                ms.ToArray());
-
-            return Ok(new
-            {
-                message = "فایل ذخیره شد",
-                image = $"/uploads/{zaerId}.jpg"
-            });
-        }
-
-        [HttpDelete("delete-image/{zaerId}")]
-        public IActionResult DeleteZaerImage(int zaerId)
-        {
-            var filePath = Path.Combine(
-                _env.WebRootPath,
-                "uploads",
-                $"{zaerId}.jpg");
-
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-
-                return Ok(new
-                {
-                    message = "فایل حذف شد"
-                });
-            }
-
-            return NotFound(new
-            {
-                message = "فایلی وجود ندارد"
-            });
-        }
     }
 
     public class UploadOptions
@@ -625,6 +561,7 @@ namespace zaerine_piyade.Controllers
     public class TeamReportDto
     {
         public int CaravanId { get; set; }
+        public string CaravanName { get; set; }
         public int Sex { get; set; }
         public int TotalTraffic { get; set; }
         public int TotalRegister { get; set; }

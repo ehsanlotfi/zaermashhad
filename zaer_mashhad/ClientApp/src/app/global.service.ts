@@ -42,7 +42,7 @@ export class GlobalService {
     );
   }
 
-  deleteZaer(id: number) {
+  deleteZaer(id: string) {
     return this.http.get(`${ROUTERAPI.delete}${id}`);
   }
 
@@ -73,16 +73,19 @@ export class GlobalService {
     return this.http.get<models.TotalModel[]>(ROUTERAPI.getAllZaer);
   }
 
-  zaerList(caravanId: number) {
+  zaerList(caravanId: number, any: string = '') {
     return this.http.get<models.ZaerModel[]>(
-      `${ROUTERAPI.zaerList}${caravanId}`,
+      `${ROUTERAPI.zaerList}/${caravanId}?any=${encodeURIComponent(any)}`,
     );
   }
 
-  zaerExcel(caravanId: number) {
-    return this.http.get(`${ROUTERAPI.zaerList}${caravanId}?excel=true`, {
-      responseType: 'blob',
-    });
+  zaerExcel(caravanId: number, any: string = '') {
+    return this.http.get(
+      `${ROUTERAPI.zaerList}/${caravanId}?excel=true&any=${encodeURIComponent(any)}`,
+      {
+        responseType: 'blob',
+      },
+    );
   }
 
   trafficReport() {

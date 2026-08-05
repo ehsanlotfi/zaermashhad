@@ -8,6 +8,8 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { GlobalService } from 'src/app/global.service';
 import * as models from 'src/app/global.model';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-zaer-registration',
@@ -40,6 +42,9 @@ export class ZaerRegistrationComponent implements OnInit {
 
   selectedImage?: File;
 
+  searchAny = '';
+  excel = false;
+
   constructor(
     private readonly globalSvc: GlobalService,
     private readonly renderer: Renderer2,
@@ -54,6 +59,9 @@ export class ZaerRegistrationComponent implements OnInit {
     this.globalSvc.getCaravans().subscribe(
       (caravans) => {
         this.caravans = caravans;
+        if (this.caravans && this.caravans.length) {
+          this.zaer.caravanId = this.caravans[0].id;
+        }
       },
       (err) => {
         this.toastr.error('خطا در دریافت کاروان‌ها');
@@ -76,34 +84,11 @@ export class ZaerRegistrationComponent implements OnInit {
 
     this.globalSvc.saveZaer(this.zaer).subscribe(
       (id: any) => {
-        if (this.selectedImage) {
-          this.uploadImage(id);
-        } else {
-          this.finishSave();
-        }
+        this.finishSave();
       },
       (err) => {
         this.loading = false;
         this.toastr.error('خطا در ذخیره اطلاعات');
-      },
-    );
-  }
-
-  uploadImage(id: number) {
-    const formData = new FormData();
-
-    formData.append('file', this.selectedImage!, this.selectedImage!.name);
-
-    this.globalSvc.uploadZaerImage(id, formData).subscribe(
-      () => {
-        this.finishSave();
-      },
-      (err) => {
-        this.loading = false;
-
-        this.toastr.warning('اطلاعات ذخیره شد ولی تصویر ارسال نشد');
-
-        this.finishSave();
       },
     );
   }
@@ -132,9 +117,7 @@ export class ZaerRegistrationComponent implements OnInit {
     this.selectedImage = undefined;
   }
 
-  deleteZaer(id: number) {
-    if (!confirm('آیا از حذف این زائر مطمئن هستید؟')) return;
-
+  deleteZaer(id: string) {
     this.loading = true;
 
     this.globalSvc.deleteZaer(id).subscribe(
@@ -156,10 +139,34 @@ export class ZaerRegistrationComponent implements OnInit {
 
     this.loading = true;
 
-    this.globalSvc.zaerList(this.zaer.caravanId).subscribe((list) => {
-      this.zaerList = list;
-      this.loading = false;
-    });
+    if (this.excel) {
+      this.globalSvc
+        .zaerExcel(this.zaer.caravanId, this.searchAny)
+        .subscribe((file) => {
+          const url = window.URL.createObjectURL(file);
+
+          const link = document.createElement('a');
+
+          link.href = url;
+          link.download = 'zaer-list.xlsx';
+
+          link.click();
+
+          window.URL.revokeObjectURL(url);
+
+          this.loading = false;
+        });
+
+      return;
+    }
+
+    this.globalSvc
+      .zaerList(this.zaer.caravanId, this.searchAny)
+      .subscribe((list) => {
+        this.zaerList = list;
+
+        this.loading = false;
+      });
   }
 
   onFileSelected(event: any) {
@@ -169,44 +176,51 @@ export class ZaerRegistrationComponent implements OnInit {
 
     if (!file.type.startsWith('image')) {
       this.toastr.error('فایل انتخاب شده تصویر نیست');
-
       return;
     }
 
-    const maxSize = 2 * 1024 * 1024; // 2MB
-
-    if (file.size > maxSize) {
-      this.toastr.error('حجم تصویر نباید بیشتر از ۲ مگابایت باشد');
-
+    if (file.size > 5 * 1024 * 1024) {
+      this.toastr.error('حجم تصویر زیاد است');
       return;
     }
 
-    const reader: FileReader = new FileReader();
+    const reader = new FileReader();
 
     reader.onload = (e: any) => {
       this.zaer.image = e.target.result;
     };
 
     reader.readAsDataURL(file);
-
-    this.selectedImage = file;
   }
-  exportExcel() {
-    if (!this.zaer.caravanId) {
-      this.toastr.warning('ابتدا کاروان را انتخاب کنید');
-      return;
-    }
 
-    this.globalSvc.zaerExcel(this.zaer.caravanId).subscribe((file) => {
-      const url = window.URL.createObjectURL(file);
+  exportExcel(): void {
+    const fileName = 'data.xlsx';
+    const worksheetName = 'Sheet1';
+    const data: any[] = [];
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'zaer-list.xlsx';
-
-      link.click();
-
-      window.URL.revokeObjectURL(url);
+    this.zaerList.forEach((item: models.ZaerModel) => {
+      data.push({
+        بارکد: item.id,
+        'نام و نام خانوادگی': item.fullname,
+        'کد ملی': item.nationalCode,
+        جنسیت: item.sex ? 'آقا' : 'خانم',
+        'نام کاروان': this.caravans.find((f) => f.id == item.caravanId)?.name,
+        'نام مدیر': this.caravans.find((f) => f.id == item.caravanId)?.admin,
+      });
     });
+
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, worksheetName);
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    const excelBlob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    saveAs(excelBlob, fileName);
   }
 }

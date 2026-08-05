@@ -11,7 +11,7 @@ export const ROUTERAPI = {
   upload: `${environment.origin}api/zaer/upload/`,
   zaer: `${environment.origin}api/zaer`,
   getAllZaer: `${environment.origin}api/zaer/get-all-zaer`,
-  zaerList: `${environment.origin}api/zaer/zaer-list/`,
+  zaerList: `${environment.origin}api/zaer/zaer-list`,
   caravanList: `${environment.origin}api/zaer/caravan-list/`,
   caravanSave: `${environment.origin}api/zaer/caravan-save/`,
   caravanDelete: `${environment.origin}api/zaer/caravan-delete`,

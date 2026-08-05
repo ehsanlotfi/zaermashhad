@@ -1,14 +1,20 @@
 @font-face {
   font-family: "iranYekan";
-  src: url(./assets/fonts/ttf/iranyekanwebregularfanum.ttf) format("ttf"),
+  src:
+    url(./assets/fonts/ttf/iranyekanwebregularfanum.ttf) format("ttf"),
     url(./assets/fonts/woff/iranyekanwebregularfanum.woff) format("woff"),
     url(./assets/fonts/eot/iranyekanwebregularfanum.eot) format("eot");
 }
 
 @font-face {
   font-family: "BARCODEFONT";
-  src: url(./assets/fonts/barcode/IDAutomationHC39M.ttf) format("ttf"),
+  src:
+    url(./assets/fonts/barcode/IDAutomationHC39M.ttf) format("ttf"),
     url(./assets/fonts/barcode/IDAutomationHC39M.otf) format("opentype");
+}
+
+.ltr {
+  direction: ltr !important;
 }
 
 .f-11 {
