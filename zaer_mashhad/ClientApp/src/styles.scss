@@ -180,13 +180,13 @@ body {
 }
 
 .page[size="A4"] {
-  width: 210mm;
+  width: 205mm;
   height: 297mm;
   overflow: hidden;
 }
 
 .page[size="A4"][layout="landscape"] {
-  width: 297mm;
+  width: 294mm;
   height: 210mm;
   overflow: hidden;
 }
@@ -225,11 +225,11 @@ body,
     }
 
     .barcode-font {
-    bottom: 1.4cm;
-    right: 4.37cm;
-    font-family: BARCODEFONT !important;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
+      bottom: 1.4cm;
+      right: 4.37cm;
+      font-family: BARCODEFONT !important;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
     }
   }
 
@@ -240,6 +240,7 @@ body,
         width: 2.1cm;
         height: 2.8cm;
         top: 28px;
+        display: none;
       }
 
       .national-code {
@@ -250,18 +251,19 @@ body,
       }
 
       .fullname {
-           bottom: 3.7cm;
-    right: 2.2cm;
-    font-size: 0.8rem;
-    color: #ffffff;
+        bottom: 3.7cm;
+        right: 2.2cm;
+        font-size: 0.8rem;
+        color: #ffffff;
+        display: none;
       }
 
       .barcode-font {
-       bottom: 2.78cm;
-    right: 1.9cm;
-    color: #000;
-    font-size: 13px;
-    letter-spacing: 3.7px;
+        bottom: 2.88cm;
+        right: 1.85cm;
+        color: #000;
+        font-size: 13px;
+        letter-spacing: 3.7px;
       }
     }
   }

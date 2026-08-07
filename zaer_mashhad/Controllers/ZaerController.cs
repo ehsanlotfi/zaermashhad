@@ -269,7 +269,7 @@ namespace zaerine_piyade.Controllers
                         transaction);
                 }
 
-                if (!string.IsNullOrWhiteSpace(model.Image))
+                if (!string.IsNullOrWhiteSpace(model.Image) && model.Image.StartsWith("data:image"))
                 {
                     Directory.CreateDirectory(UploadPath);
 
